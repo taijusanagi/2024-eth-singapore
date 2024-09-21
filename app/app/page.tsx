@@ -40,9 +40,8 @@ const ProgressBar = ({ currentScreen }: { currentScreen: string }) => {
       {progressScreens.map((screen, index) => (
         <div
           key={index}
-          className={`h-1 w-16 mx-1 rounded-full ${
-            index <= currentIndex ? "bg-blue-500" : "bg-gray-300"
-          }`}
+          className={`h-1 w-16 mx-1 rounded-full ${index <= currentIndex ? "bg-blue-500" : "bg-gray-300"
+            }`}
         ></div>
       ))}
     </div>
@@ -204,7 +203,7 @@ export default function HomePage() {
               Welcome to
             </h1>
             <img
-              src="/game-logo.png"
+              src="/game-logo-optimized.jpg"
               alt="Silent Wars Logo"
               className="w-[300px] h-[300px] mx-auto mb-12"
             />
@@ -243,13 +242,12 @@ export default function HomePage() {
               <button
                 key={index}
                 onClick={handleNextScreen}
-                className={`w-full py-4 px-6 mb-4 rounded-xl text-left text-lg tracking-wider ${
-                  index === 0
+                className={`w-full py-4 px-6 mb-4 rounded-xl text-left text-lg tracking-wider ${index === 0
                     ? "bg-blue-600"
                     : index === 1
-                    ? "bg-purple-600"
-                    : "bg-red-600"
-                }`}
+                      ? "bg-purple-600"
+                      : "bg-red-600"
+                  }`}
               >
                 <div className="flex items-center">
                   <img
@@ -263,8 +261,8 @@ export default function HomePage() {
                       {index === 0
                         ? "Freedom for all humans"
                         : index === 1
-                        ? "Join the allmighty"
-                        : "Huh?"}
+                          ? "Join the allmighty"
+                          : "Huh?"}
                     </div>
                   </div>
                 </div>

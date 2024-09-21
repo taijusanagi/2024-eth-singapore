@@ -198,7 +198,7 @@ const AroundYouDrawer: React.FC<AroundYouDrawerProps> = ({
           onClick={onClose}
           className="mt-4 bg-gray-200 text-black px-4 py-2 rounded-full w-full"
         >
-          关闭
+          Close
         </button>
       </div>
     </div>
