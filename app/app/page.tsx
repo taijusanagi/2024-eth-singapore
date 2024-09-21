@@ -17,6 +17,8 @@ import { readContract } from "viem/actions";
 import { addresses } from "@/contracts/addresses";
 import { GameAbi } from "@/contracts/abi/Game";
 
+import { IDKitWidget } from '@worldcoin/idkit'
+
 const Screen = {
   WELCOME: "welcome",
   CONNECT_WALLET: "connectWallet",
@@ -282,7 +284,7 @@ export default function HomePage() {
         {currentScreen === Screen.STAKE && (
           <div className="text-center w-full max-w-md p-4">
             <h1 className="text-3xl font-bold mb-4 tracking-wider">
-              Stake ETH
+              Verification or Stake
             </h1>
             <p className="mb-8 text-lg tracking-wider">
               For that's what your belief
@@ -299,10 +301,25 @@ export default function HomePage() {
             </div>
             <button
               onClick={handleNextScreen}
-              className="bg-blue-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-full w-full text-lg tracking-wider"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full text-lg tracking-wider mb-2"
             >
               Stake
             </button>
+            <div className="mb-4 bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-full w-full text-lg tracking-wider">
+              <IDKitWidget
+                app_id="app_staging_a57b7a313c3815564cc8eb4e3255551c" // obtained from the Developer Portal
+                action="silent-wars" // this is your action name from the Developer Portal
+                onSuccess={(result)=> {
+                  console.log("result", result)
+                }}
+                onError={(error)=> {
+                  console.log("error", error)
+                }}
+                // verification_level="device" // minimum verification level accepted, defaults to "orb"
+              >
+                {({ open }) => <button onClick={open}>Verify with World ID</button>}
+              </IDKitWidget>
+            </div>
           </div>
         )}
 
@@ -394,7 +411,7 @@ export default function HomePage() {
             <div className="absolute bottom-24 left-2 right-2 flex justify-between">
               <div className="bg-white bg-opacity-70 rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
                 <span className="text-3xl">🔋</span>
-                <span className="text-2xl text-gray-600">{enegey}/100</span>
+                <span className="text-2xl text-gray-600">{enegey}/1000</span>
               </div>
               <div className="bg-white bg-opacity-70 rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
                 <span className="text-3xl">💰</span>
