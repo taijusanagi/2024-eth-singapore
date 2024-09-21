@@ -24,11 +24,14 @@ describe("Game", function () {
   });
 
   describe("Functions", function () {
-    it("Start", async function () {
+    it("Should work", async function () {
       const { game, owner } = await loadFixture(fixture);
       await game.spawn();
       console.log(await game.getPlayerByAddress(owner.address));
       await expect(game.spawn()).to.be.rejectedWith("Player already exists");
+
+      console.log(await game.getNearestMonster(owner.address));
+      console.log(await game.getNearestResource(owner.address));
     });
   });
 });
