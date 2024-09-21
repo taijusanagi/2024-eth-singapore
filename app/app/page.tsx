@@ -56,6 +56,8 @@ export default function HomePage() {
       return;
     }
 
+    console.log("log");
+
     const signIn = async () => {
       if (!user) {
         await telegramSignIn({ forceCreateUser: true });
@@ -122,7 +124,7 @@ export default function HomePage() {
         {currentScreen === Screen.WELCOME && (
           <div className="text-center p-4">
             <h1 className="text-4xl font-bold mb-8 tracking-wider">
-              Welcome to Silent Wars
+              Welcome to
             </h1>
             <img
               src="/game-logo.png"
