@@ -38,6 +38,15 @@ export default function Component() {
     signIn();
   }, [sdkHasLoaded, user, telegramSignIn]);
 
+  useEffect(() => {
+    if (!user && currentScreen !== Screen.WELCOME) {
+      setCurrentScreen(Screen.WELCOME);
+    }
+    if (user && currentScreen === Screen.CONNECT_WALLET) {
+      setCurrentScreen(Screen.CHOOSE_BRIEF);
+    }
+  }, [user]);
+
   const handleNextScreen = () => {
     const screenOrder = [
       Screen.WELCOME,
@@ -48,20 +57,16 @@ export default function Component() {
       Screen.GAME,
     ];
     const currentScreenIndex = screenOrder.indexOf(currentScreen);
-    const nextScreen = screenOrder[currentScreenIndex + 1];
+    let nextScreen = screenOrder[currentScreenIndex + 1];
+    if (nextScreen === Screen.CONNECT_WALLET && user) {
+      nextScreen = Screen.CHOOSE_BRIEF;
+    }
     setCurrentScreen(nextScreen);
   };
 
   const handleConnect = async () => {
     setShowAuthFlow(true);
   };
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-    setCurrentScreen(Screen.CHOOSE_BRIEF);
-  }, [user]);
 
   return (
     <div className="h-screen bg-gray-900 text-white flex flex-col">
