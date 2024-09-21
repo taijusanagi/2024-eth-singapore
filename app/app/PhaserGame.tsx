@@ -70,15 +70,11 @@ const PhaserGame = () => {
 
         preload_fx();
 
-        this.load.spritesheet('noun1', 'phaser/chars/nouns/1.png', {
-            frameWidth: 128,  // Replace with your sprite width
-            frameHeight: 128  // Replace with your sprite height
-        });
-
-        this.load.spritesheet('noun2', 'phaser/chars/nouns/2.png', {
-            frameWidth: 128,  // Replace with your sprite width
-            frameHeight: 128  // Replace with your sprite height
-        });
+        this.load.image('noun1', 'phaser/chars/nouns/1.png');
+        this.load.image('noun2', 'phaser/chars/nouns/2.png');
+        this.load.image('noun3', 'phaser/chars/nouns/3.png');
+        this.load.image('noun4', 'phaser/chars/nouns/4.png');
+        this.load.image('noun5', 'phaser/chars/nouns/5.png');
     };
 
     function create(this: Phaser.Scene) {
@@ -350,6 +346,15 @@ const PhaserGame = () => {
     function PlayerFight() {
         PlayAttack();
     }
+
+    // Add an event listener for the 'keydown' event
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'ArrowLeft') {
+            console.log('The "Up Arrow" key was pressed');
+            gameInstanceRef.current.player.setTexture("noun" + (Math.floor(Math.random() * 5) + 1));
+        }
+    });
+
 
     return (
         <>
