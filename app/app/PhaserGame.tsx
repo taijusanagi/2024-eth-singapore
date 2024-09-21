@@ -13,8 +13,6 @@ const PhaserGame = () => {
     let bg_mid: any;
     let bg_far: any;
     let bg_container: any;
-    let player_Y: any;
-    let player_X: any;
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -67,6 +65,7 @@ const PhaserGame = () => {
         this.load.image('bg_wall', 'phaser/bg/wall.png');
 
         this.load.image('pickaxe', 'phaser/pickaxe/1.png');
+        this.load.image('coin', 'phaser/resources/coin.png');
 
         preload_fx();
 
@@ -101,12 +100,19 @@ const PhaserGame = () => {
 
         create_fx();
 
+        const resourceNode = this.add.sprite(450, 500, 'coin');
+        resourceNode.setScale(4);
+        resourceNode.visible = false;
+        gameInstanceRef.current.resourceNode = resourceNode;
+
         const canvasWidth = this.cameras.main.width;
-        player_X = canvasWidth / 2;
-        player_Y = 480;
+        const player_X = canvasWidth / 2;
+        const player_Y = 480;
         const player = this.add.sprite(player_X, player_Y, 'noun1');
         player.setScale(1);
         gameInstanceRef.current.player = player;
+        gameInstanceRef.current.player_X = player_X;
+        gameInstanceRef.current.player_Y = player_Y;
 
         const opponent = this.add.sprite(canvasWidth / 2 + 150, player_Y, 'noun2');
         opponent.flipX = true;
@@ -177,6 +183,38 @@ const PhaserGame = () => {
 
     }
 
+    // Function to create and animate a stream of coins flying to a target
+    function launchCoinStream(startX: any, startY: any, targetX: any, targetY: any) {
+        const scene = gameInstanceRef.current.scene.scenes[0];
+
+        const numberOfCoins = 50;  // Number of coins to animate
+        const delayBetweenCoins = 200;  // Delay between each coin animation
+        const coinSprites = [];
+
+        for (let i = 0; i < numberOfCoins; i++) {
+            // Create coin sprite at the start position
+            const coin = scene.add.sprite(startX, startY, 'coin');
+            coin.setScale(0);  // Optional: scale the coin down
+            coinSprites.push(coin);
+
+            // Create a tween for each coin with a delay for each
+            scene.tweens.add({
+                targets: coin,
+                scale: 1,
+                x: targetX,  // Target X position
+                y: targetY,  // Target Y position
+                ease: 'Sine.easeInOut',  // Easing function for smooth flying
+                duration: 1000,  // Time in milliseconds to reach the target
+                delay: i * delayBetweenCoins,  // Delay between each coin
+                onComplete: () => {
+                    // Optional: Destroy the coin after it reaches the target
+                    coin.destroy();
+
+                }
+            });
+        }
+    }
+
     function PlayHitFX(x: number, y: number) {
         const activeScene = gameInstanceRef.current.scene.scenes[0];
 
@@ -200,6 +238,10 @@ const PhaserGame = () => {
         gameInstanceRef.current.opponent.visible = false;
         gameInstanceRef.current.player_idle_tween.pause();
         gameInstanceRef.current.pickaxe.visible = true;
+        gameInstanceRef.current.resourceNode.visible = true;
+
+        launchCoinStream(gameInstanceRef.current.player_X + 100, gameInstanceRef.current.player_Y + 80,
+            gameInstanceRef.current.player_X + 270, 100);
     }
 
     function Faint(target: any) {
@@ -244,12 +286,13 @@ const PhaserGame = () => {
         gameInstanceRef.current.gameState = GAME_STATES.COMBAT;
         gameInstanceRef.current.player_idle_tween.pause();
         gameInstanceRef.current.pickaxe.visible = false;
+        gameInstanceRef.current.resourceNode.visible = false;
 
         PlayHitFX(player.x, player.y);
 
         // Set the range for left and right movement (adjust the values as needed)
-        const leftMove = player_X - 20;  // Move 50 pixels to the left
-        const rightMove = player_X + 50;  // Move 50 pixels to the right
+        const leftMove = gameInstanceRef.current.player_X - 20;  // Move 50 pixels to the left
+        const rightMove = gameInstanceRef.current.player_X + 50;  // Move 50 pixels to the right
 
         activeScene.tweens.add({
             targets: player,  // The sprite to animate
@@ -287,6 +330,7 @@ const PhaserGame = () => {
         gameInstanceRef.current.gameState = GAME_STATES.IDLE;
         gameInstanceRef.current.player_idle_tween.resume();
         gameInstanceRef.current.pickaxe.visible = false;
+        gameInstanceRef.current.resourceNode.visible = false;
     }
 
     function PlayerFight() {
