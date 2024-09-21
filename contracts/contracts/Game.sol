@@ -16,11 +16,13 @@ contract Game {
 
     uint256 public worldIndex;
     uint256 public playerCount;
-    uint256 public mapSize = 180;
+    uint256 public mapSize = 100;
     uint256 public initialResources = 100;
     uint256 public initialEnergy = 100;
     uint256 public maxResourceCount = 20;
     uint256 public maxEnemyCount = 20;
+
+    uint256 public effect = 10;
 
     // Mapping world index to players, monsters, and resources
     mapping(uint256 => mapping(address => uint256))
@@ -55,9 +57,65 @@ contract Game {
         );
     }
 
-    function harvest() public {}
+    function harvest() public {
+        Player storage player = players[worldIndex][
+            senderToPlayerIndexes[worldIndex][msg.sender]
+        ];
+        require(player.energy > 0, "Not enough energy to harvest");
 
-    function fight() public {}
+        (
+            uint256 distance,
+            uint256 resourceX,
+            uint256 resourceY
+        ) = getNearestResource(msg.sender);
+        require(distance > 0, "No resources available");
+
+        // Move to the resource
+        _move(player, resourceX, resourceY);
+
+        // Add resources and remove the harvested resource from the map
+        player.resources += effect;
+        _removeResource(resourceX, resourceY);
+    }
+
+    function fight() public {
+        Player storage player = players[worldIndex][
+            senderToPlayerIndexes[worldIndex][msg.sender]
+        ];
+        require(player.energy > 0, "Not enough energy to fight");
+
+        (
+            uint256 distance,
+            uint256 monsterX,
+            uint256 monsterY
+        ) = getNearestMonster(msg.sender);
+        require(distance > 0, "No monsters available");
+
+        // Move to the monster
+        _move(player, monsterX, monsterY);
+
+        // Simulate combat (simplified version)
+        player.resources += effect;
+        _removeMonster(monsterX, monsterY);
+    }
+
+    function _move(
+        Player storage player,
+        uint256 targetX,
+        uint256 targetY
+    ) internal {
+        uint256 distance = _manhattanDistance(
+            player.x,
+            player.y,
+            targetX,
+            targetY
+        );
+        require(player.energy >= distance, "Not enough energy to move");
+
+        player.energy -= distance;
+        player.x = targetX;
+        player.y = targetY;
+    }
 
     function getPlayerByAddress(
         address playerAddress
@@ -108,6 +166,33 @@ contract Game {
         uint256 randX = _random(1, seed) % mapSize; // Random x between 0 and mapSize-1
         uint256 randY = _random(2, seed) % mapSize; // Random y between 0 and mapSize-1
         return (randX, randY);
+    }
+
+    function getMap() public view returns (uint256[100][100] memory) {
+        uint256[100][100] memory map;
+
+        // Place players on the map (represented as 1)
+        for (uint256 i = 1; i <= playerCount; i++) {
+            Player memory player = players[worldIndex][i];
+            map[player.x][player.y] = 1;
+        }
+
+        // Place resources on the map (represented as 2)
+        OtherObject[] memory worldResources = resources[worldIndex];
+        for (uint256 i = 0; i < worldResources.length; i++) {
+            OtherObject memory resource = worldResources[i];
+            map[resource.x][resource.y] = 2;
+        }
+
+        // Place monsters on the map (represented as 3)
+        OtherObject[] memory worldMonsters = monsters[worldIndex];
+        for (uint256 i = 0; i < worldMonsters.length; i++) {
+            OtherObject memory monster = worldMonsters[i];
+            map[monster.x][monster.y] = 3;
+        }
+
+        // The rest of the map remains 0 by default
+        return map;
     }
 
     // Get nearest monster to player
@@ -165,5 +250,27 @@ contract Game {
         uint256 y2
     ) internal pure returns (uint256) {
         return (x1 > x2 ? x1 - x2 : x2 - x1) + (y1 > y2 ? y1 - y2 : y2 - y1);
+    }
+
+    function _removeResource(uint256 x, uint256 y) internal {
+        OtherObject[] storage worldResources = resources[worldIndex];
+        for (uint256 i = 0; i < worldResources.length; i++) {
+            if (worldResources[i].x == x && worldResources[i].y == y) {
+                worldResources[i] = worldResources[worldResources.length - 1];
+                worldResources.pop();
+                break;
+            }
+        }
+    }
+
+    function _removeMonster(uint256 x, uint256 y) internal {
+        OtherObject[] storage worldMonsters = monsters[worldIndex];
+        for (uint256 i = 0; i < worldMonsters.length; i++) {
+            if (worldMonsters[i].x == x && worldMonsters[i].y == y) {
+                worldMonsters[i] = worldMonsters[worldMonsters.length - 1];
+                worldMonsters.pop();
+                break;
+            }
+        }
     }
 }
