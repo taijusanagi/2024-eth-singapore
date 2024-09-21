@@ -185,7 +185,9 @@ export const genMaciStateFromContract = async (
     publishMessageLogs.forEach((event: any) => {
       assert(!!event);
 
-      const message = new Message(event.args._message[0].map((x) => BigInt(x)));
+      const message = new Message(
+        event.args._message[0].map((x: any) => BigInt(x))
+      );
 
       const encPubKey = new PubKey(
         event.args._encPubKey.map((x: any) => BigInt(x.toString())) as [
