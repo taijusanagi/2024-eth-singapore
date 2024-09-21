@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   DynamicWidget,
   useTelegramLogin,
@@ -11,6 +11,7 @@ import Spinner from "./Spinner";
 // Enum for managing different screens
 const Screen = {
   WELCOME: "welcome",
+  ACCESS_WALLET: "accessWallet",
   CHOOSE_BRIEF: "chooseBrief",
   STAKE: "stake",
   GAME_EXPLANATION: "gameExplanation",
@@ -18,33 +19,15 @@ const Screen = {
 };
 
 export default function Component() {
-  const { sdkHasLoaded, user } = useDynamicContext();
+  const { user } = useDynamicContext();
   const { telegramSignIn } = useTelegramLogin();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentScreen, setCurrentScreen] = useState(Screen.WELCOME);
-
-  useEffect(() => {
-    if (currentScreen === Screen.WELCOME) {
-      return;
-    }
-
-    if (!sdkHasLoaded) {
-      return;
-    }
-
-    const signIn = async () => {
-      if (!user) {
-        await telegramSignIn({ forceCreateUser: true });
-      }
-      setIsLoading(false);
-    };
-
-    signIn();
-  }, [sdkHasLoaded, user, telegramSignIn, currentScreen]);
 
   const handleNextScreen = () => {
     const screenOrder = [
       Screen.WELCOME,
+      Screen.ACCESS_WALLET,
       Screen.CHOOSE_BRIEF,
       Screen.STAKE,
       Screen.GAME_EXPLANATION,
@@ -53,6 +36,16 @@ export default function Component() {
     const currentScreenIndex = screenOrder.indexOf(currentScreen);
     const nextScreen = screenOrder[currentScreenIndex + 1];
     setCurrentScreen(nextScreen);
+  };
+
+  // Move the sign-in logic into handleConnect
+  const handleConnect = async () => {
+    setIsLoading(true);
+    if (!user) {
+      await telegramSignIn({ forceCreateUser: true });
+    }
+    setIsLoading(false);
+    setCurrentScreen(Screen.CHOOSE_BRIEF);
   };
 
   return (
@@ -67,9 +60,10 @@ export default function Component() {
           ETHGlobal
         </div>
         <div>
-          {currentScreen !== Screen.WELCOME && (
-            <>{isLoading ? <Spinner /> : <DynamicWidget />}</>
-          )}
+          {currentScreen !== Screen.WELCOME &&
+            currentScreen !== Screen.ACCESS_WALLET && (
+              <>{isLoading ? <Spinner /> : <DynamicWidget />}</>
+            )}
         </div>
       </header>
 
@@ -82,6 +76,18 @@ export default function Component() {
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full max-w-xs"
             >
               Play
+            </button>
+          </div>
+        )}
+
+        {currentScreen === Screen.ACCESS_WALLET && (
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-6">Access Dynamic Wallet</h1>
+            <button
+              onClick={handleConnect}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full max-w-xs"
+            >
+              {isLoading ? <Spinner /> : "Connect"}
             </button>
           </div>
         )}
