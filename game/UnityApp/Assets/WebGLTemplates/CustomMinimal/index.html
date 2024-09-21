@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Unity WebGL Player | {{{ PRODUCT_NAME }}}</title>
+</head>
+
+<body style="text-align: center; padding: 0; border: 0; margin: 0;">
+  <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} tabindex="-1"
+    style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
+  <script src="Build/{{{ LOADER_FILENAME }}}"></script>
+  <script>
+    // Function to send messages from Unity (C#) to the parent iframe
+    function SendMessageToParent(message) {
+      window.parent.postMessage(message, "*"); // Send the message to the parent iframe
+    }
+
+    // Listen for messages from the parent iframe
+    window.addEventListener("message", function (event) {
+      var inputData = event.data;
+      console.log("Message received from parent: ", inputData);
+      // Call the Unity function to pass the message to C#
+      unityInstance.SendMessage('IframeCommunication', 'ReceiveInputFromParent', inputData);
+    });
+
+    if (true | /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      // Mobile device style: fill the whole browser client area with the game canvas:
+      var meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+      document.getElementsByTagName('head')[0].appendChild(meta);
+
+      var canvas = document.querySelector("#unity-canvas");
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+      canvas.style.position = "fixed";
+
+      document.body.style.textAlign = "left";
+    }
+
+    createUnityInstance(document.querySelector("#unity-canvas"), {
+      dataUrl: "Build/{{{ DATA_FILENAME }}}",
+      frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
+      #if USE_THREADS
+        workerUrl: "Build/{{{ WORKER_FILENAME }}}",
+      #endif
+#if USE_WASM
+        codeUrl: "Build/{{{ CODE_FILENAME }}}",
+      #endif
+#if MEMORY_FILENAME
+        memoryUrl: "Build/{{{ MEMORY_FILENAME }}}",
+      #endif
+#if SYMBOLS_FILENAME
+        symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
+      #endif
+        streamingAssetsUrl: "StreamingAssets",
+      companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+      productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+      productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+      });
+  </script>
+
+  <script>
+    // Listen for messages from the parent iframe (Telegram mini-app)
+    window.addEventListener("message", function (event) {
+      var inputData = event.data;
+      console.log("Message received from parent: ", inputData);
+
+      // Pass the received data to Unity
+      SendMessageToUnity(inputData);
+    });
+
+    // Function to send data from Unity to the parent iframe
+    function SendMessageToUnity(message) {
+      unityInstance.SendMessage('IframeCommunication', 'ReceiveInputFromParent', message);
+    }
+  </script>
+
+
+
+
+  <button onclick="SendMessageToUnity('test')">Send message to unity</button>
+
+
+</body>
+
+</html>

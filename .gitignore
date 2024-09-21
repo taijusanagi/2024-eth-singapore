@@ -135,3 +135,71 @@ dist
 # IDE
 .idea/
 .vscode/
+
+
+
+# Unity generated files
+game/UnityApp/[Ll]ibrary/
+game/UnityApp/[Tt]emp/
+game/UnityApp/[Oo]bj/
+game/UnityApp/[Bb]uild/
+game/UnityApp/[Bb]uilds/
+game/UnityApp/[Ll]ogs/
+game/UnityApp/[Mm]emoryCaptures/
+game/UnityApp/UserSettings/
+
+# Avoid ignoring asset meta data files
+!game/UnityApp/[Aa]ssets/**/*.meta
+!game/UnityApp/[Pp]ackages/**/*.meta
+
+# Auto-generated VS/MD/VSCode project files
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.ide
+*.sln.ide
+
+# Unity3D generated file on crash reports
+game/UnityApp/sysinfo.txt
+
+# Builds
+game/UnityApp/*.apk
+game/UnityApp/*.aab
+game/UnityApp/*.unitypackage
+
+# Crash reports
+game/UnityApp/*.crash
+game/UnityApp/*.stacktrace
+
+# OS-specific files (optional)
+.DS_Store
+Thumbs.db
+
+# JetBrains Rider project files
+.idea/
+*.sln.iml
+
+# Visual Studio Code specific files
+game/UnityApp/.vscode/
+
+# Unity Asset Store Tools
+game/UnityApp/[Tt]ools/
+
+# Compiled data
+*.dll
+*.exe
+*.pdb
+*.mdb
+
+
