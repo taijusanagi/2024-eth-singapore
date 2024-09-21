@@ -11,7 +11,7 @@ import PhaserGame from "./PhaserGame";
 
 const Screen = {
   WELCOME: "welcome",
-  ACCESS_WALLET: "accessWallet",
+  CONNECT_WALLET: "connectWallet",
   CHOOSE_BRIEF: "chooseBrief",
   STAKE: "stake",
   GAME_EXPLANATION: "gameExplanation",
@@ -19,7 +19,7 @@ const Screen = {
 };
 
 export default function Component() {
-  const { sdkHasLoaded, user } = useDynamicContext();
+  const { sdkHasLoaded, user, setShowAuthFlow } = useDynamicContext();
   const { telegramSignIn } = useTelegramLogin();
   const [isLoading, setIsLoading] = useState(true);
   const [currentScreen, setCurrentScreen] = useState(Screen.WELCOME);
@@ -37,39 +37,41 @@ export default function Component() {
     };
 
     signIn();
-  }, [sdkHasLoaded, user, telegramSignIn, currentScreen]);
+  }, [sdkHasLoaded, user, telegramSignIn]);
+
+  useEffect(() => {
+    if (!user && currentScreen !== Screen.WELCOME) {
+      setCurrentScreen(Screen.WELCOME);
+    }
+    if (user && currentScreen === Screen.CONNECT_WALLET) {
+      setCurrentScreen(Screen.CHOOSE_BRIEF);
+    }
+  }, [user]);
 
   const handleNextScreen = () => {
     const screenOrder = [
       Screen.WELCOME,
-      Screen.ACCESS_WALLET,
+      Screen.CONNECT_WALLET,
       Screen.CHOOSE_BRIEF,
       Screen.STAKE,
       Screen.GAME_EXPLANATION,
       Screen.GAME,
     ];
     const currentScreenIndex = screenOrder.indexOf(currentScreen);
-    const nextScreen = screenOrder[currentScreenIndex + 1];
+    let nextScreen = screenOrder[currentScreenIndex + 1];
+    if (nextScreen === Screen.CONNECT_WALLET && user) {
+      nextScreen = Screen.CHOOSE_BRIEF;
+    }
     setCurrentScreen(nextScreen);
   };
 
   const handleConnect = async () => {
-    console.log("handle connect", user);
-    if (!user) {
-      await telegramSignIn({ forceCreateUser: true });
-    }
+    setShowAuthFlow(true);
   };
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-    setCurrentScreen(Screen.CHOOSE_BRIEF);
-  }, [user]);
 
   return (
     <div className="h-screen bg-gray-900 text-white flex flex-col">
-      <header className="w-full p-4 flex justify-between items-center">
+      <header className="absolute top-0 left-0 w-full p-4 flex justify-between items-center">
         <div
           className="text-xl font-bold cursor-pointer"
           onClick={() => {
@@ -98,7 +100,7 @@ export default function Component() {
           </div>
         )}
 
-        {currentScreen === Screen.ACCESS_WALLET && (
+        {currentScreen === Screen.CONNECT_WALLET && (
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-6">Access Dynamic Wallet</h1>
             <button
