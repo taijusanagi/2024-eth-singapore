@@ -27,7 +27,6 @@ describe("Game", function () {
     it("Start", async function () {
       const { game, owner } = await loadFixture(fixture);
       await game.spawn();
-      console.log(await game.players(1));
       console.log(await game.getPlayerByAddress(owner.address));
       await expect(game.spawn()).to.be.rejectedWith("Player already exists");
     });
