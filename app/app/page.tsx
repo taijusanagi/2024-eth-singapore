@@ -9,6 +9,8 @@ import {
 } from "../lib/dynamic";
 import Spinner from "./Spinner";
 import PhaserGame from "./PhaserGame";
+import GlobalStateModal from "./components/GlobalStateModal";
+import AroundYouDrawer from "./components/AroundYouDrawer";
 
 const Screen = {
   WELCOME: "welcome",
@@ -47,6 +49,8 @@ function AppContent() {
   const { telegramSignIn } = useTelegramLogin();
   const [isLoading, setIsLoading] = useState(true);
   const [currentScreen, setCurrentScreen] = useState(Screen.WELCOME);
+  const [isGlobalStateModalOpen, setIsGlobalStateModalOpen] = useState(false);
+  const [isAroundYouDrawerOpen, setIsAroundYouDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (!sdkHasLoaded) {
@@ -247,14 +251,17 @@ function AppContent() {
         )}
 
         {currentScreen === Screen.GAME && (
-          <div className="relative w-full h-screen max-w-md mx-auto bg-white overflow-hidden font-['SF Pro']">
+          <div className="relative w-full h-screen max-w-md mx-auto bg-white overflow-hidden font-['Londrina Solid']">
             {/* 全局状态 */}
-            <div className="absolute top-4 left-5 right-5 bg-white rounded-lg shadow-md border border-gray-200 p-4 flex justify-between items-center">
-              <div>
-                <div className="text-xl font-bold text-black">Global State</div>
-                <div className="text-base text-gray-500">👾 +10 Res</div>
+            <div 
+              className="absolute top-32 left-5 right-5 bg-white rounded-lg shadow-md border border-gray-200 p-4 cursor-pointer"
+              onClick={() => setIsGlobalStateModalOpen(true)}
+            >
+              <div className="text-xl font-bold mb-2 text-black">Global State</div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xl">👾</span>
+                <span className="text-lg text-gray-600">+10 Res</span>
               </div>
-              <div className="text-blue-500 text-2xl">▶</div>
             </div>
 
             {/* 游戏主屏幕 */}
@@ -297,7 +304,10 @@ function AppContent() {
             </div>
 
             {/* 周围状态栏 */}
-            <div className="absolute bottom-2 left-3 right-3 bg-white rounded-lg shadow-md border border-gray-200 p-2">
+            <div 
+              className="absolute bottom-2 left-3 right-3 bg-white rounded-lg shadow-md border border-gray-200 p-2 cursor-pointer"
+              onClick={() => setIsAroundYouDrawerOpen(true)}
+            >
               <div className="text-2xl font-bold mb-1 text-black">Around you</div>
               <div className="flex justify-between">
                 <div className="flex items-center space-x-1">
@@ -319,6 +329,14 @@ function AppContent() {
               </div>
             </div>
           </div>
+        )}
+
+        {isGlobalStateModalOpen && (
+          <GlobalStateModal onClose={() => setIsGlobalStateModalOpen(false)} />
+        )}
+
+        {isAroundYouDrawerOpen && (
+          <AroundYouDrawer onClose={() => setIsAroundYouDrawerOpen(false)} />
         )}
       </main>
     </div>
