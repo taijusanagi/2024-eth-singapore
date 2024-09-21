@@ -121,15 +121,17 @@ export default function HomePage() {
 
         {currentScreen === Screen.WELCOME && (
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-8">Welcome to Silent Wars</h1>
+            <h1 className="text-4xl font-bold mb-8 tracking-wider">
+              Welcome to Silent Wars
+            </h1>
             <img
               src="/game-logo.png"
               alt="Silent Wars Logo"
-              className="w-[300px] h-[300px] mx-auto mb-8"
+              className="w-[300px] h-[300px] mx-auto mb-12"
             />
             <button
               onClick={handleNextScreen}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full max-w-xs"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full max-w-xs text-lg tracking-wider"
             >
               Play
             </button>
@@ -138,10 +140,12 @@ export default function HomePage() {
 
         {currentScreen === Screen.CONNECT_WALLET && (
           <div className="text-center">
-            <h1 className="text-2xl font-bold mb-6">Access Dynamic Wallet</h1>
+            <h1 className="text-3xl font-bold mb-6 tracking-wider">
+              Access Dynamic Wallet
+            </h1>
             <button
               onClick={handleConnect}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full max-w-xs"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full max-w-xs text-lg tracking-wider"
             >
               Connect
             </button>
@@ -150,15 +154,17 @@ export default function HomePage() {
 
         {currentScreen === Screen.CHOOSE_BRIEF && (
           <div className="text-center w-full max-w-md">
-            <h1 className="text-2xl font-bold mb-6">
+            <h1 className="text-3xl font-bold mb-4 tracking-wider">
               Let's skin into the game
             </h1>
-            <p className="mb-4">Choose your faction, Choose your beliefs</p>
+            <p className="mb-8 text-lg tracking-wider">
+              Choose your faction, Choose your beliefs
+            </p>
             {["Cyberpunk", "Moloch", "Memecoin"].map((faction, index) => (
               <button
                 key={index}
                 onClick={handleNextScreen}
-                className={`w-full py-4 px-6 mb-4 rounded-xl text-left ${
+                className={`w-full py-4 px-6 mb-4 rounded-xl text-left text-lg tracking-wider ${
                   index === 0
                     ? "bg-blue-600"
                     : index === 1
@@ -173,8 +179,8 @@ export default function HomePage() {
                     className="w-8 h-8 mr-4"
                   />
                   <div>
-                    <div className="font-bold">{faction}</div>
-                    <div className="text-sm opacity-80">
+                    <div className="font-bold text-white">{faction}</div>
+                    <div className="text-base opacity-80 text-white">
                       {index === 0
                         ? "Freedom for all humans"
                         : index === 1
@@ -190,22 +196,25 @@ export default function HomePage() {
 
         {currentScreen === Screen.STAKE && (
           <div className="text-center w-full max-w-md">
-            <h1 className="text-2xl font-bold mb-6">Stake ETH</h1>
-            <p className="mb-4">For that's what your belief</p>
-            <div className="bg-gray-800 p-4 rounded-xl mb-4 flex items-center justify-between">
+            <h1 className="text-3xl font-bold mb-4 tracking-wider">
+              Stake ETH
+            </h1>
+            <p className="mb-8 text-lg tracking-wider">
+              For that's what your belief
+            </p>
+            <div className="p-4 rounded-xl mb-4 flex items-center justify-between border">
               <input
                 type="number"
                 placeholder="0.01"
                 className="bg-transparent text-2xl w-full outline-none"
               />
               <div className="flex items-center">
-                <div className="w-6 h-6 bg-blue-500 rounded-full mr-2"></div>
                 <span>ETH</span>
               </div>
             </div>
             <button
               onClick={handleNextScreen}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full"
+              className="bg-blue-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-full w-full text-lg tracking-wider"
             >
               Stake
             </button>
@@ -214,9 +223,9 @@ export default function HomePage() {
 
         {currentScreen === Screen.GAME_EXPLANATION && (
           <div className="text-center w-full max-w-md">
-            <h1 className="text-2xl font-bold mb-6">Game</h1>
-            <p className="mb-4">Farm, Battle, Govern</p>
-            <div className="mb-4 text-left">
+            <h1 className="text-3xl font-bold mb-4 tracking-wider">Game</h1>
+            <p className="mb-8 tracking-wider text-lg">Farm, Battle, Govern</p>
+            <div className="mb-4 text-left text-lg tracking-wider">
               <h2 className="font-bold flex items-center mb-2">
                 <span className="mr-2">🧺</span> Farm
               </h2>
@@ -224,7 +233,7 @@ export default function HomePage() {
                 Collect resources for your guild
               </p>
             </div>
-            <div className="mb-4 text-left">
+            <div className="mb-4 text-left text-lg tracking-wider">
               <h2 className="font-bold flex items-center mb-2">
                 <span className="mr-2">⚔️</span> Battle
               </h2>
@@ -232,7 +241,7 @@ export default function HomePage() {
                 "Interact" with opponents to collect their resources
               </p>
             </div>
-            <div className="mb-4 text-left">
+            <div className="mb-4 text-left text-lg tracking-wider">
               <h2 className="font-bold flex items-center mb-2">
                 <span className="mr-2">🧠</span> Govern
               </h2>
@@ -242,7 +251,7 @@ export default function HomePage() {
             </div>
             <button
               onClick={handleNextScreen}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full mt-4"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full mt-4 text-lg tracking-wider"
             >
               Start
             </button>
