@@ -64,6 +64,10 @@ const PhaserGame = forwardRef((props, ref) => {
     useImperativeHandle(ref, () => ({
         PlayerFight: () => {
             PlayAttack();
+        },
+
+        Harvest: () => {
+            Harvest();  // Expose the Harvest function
         }
     }));
 
@@ -408,7 +412,6 @@ const PhaserGame = forwardRef((props, ref) => {
                 console.log("Returning to original angle");
             },
             onComplete: () => {
-                console.log("Attack finished");
                 // After the first attack (right movement), create another tween to move left
                 activeScene.tweens.add({
                     targets: player,
@@ -418,10 +421,10 @@ const PhaserGame = forwardRef((props, ref) => {
                     ease: "Sine.easeInOut",
                     yoyo: true, // Return to the original position
                     onStart: () => {
-                        console.log("Left move started");
                     },
                     onComplete: () => {
                         console.log("Left move completed");
+                        PlayerWalk();
                     },
                 });
             },
