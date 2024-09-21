@@ -20,6 +20,7 @@ const Screen = {
 
 export default function Component() {
   const { user } = useDynamicContext();
+
   const { telegramSignIn } = useTelegramLogin();
   const [isLoading, setIsLoading] = useState(false);
   const [currentScreen, setCurrentScreen] = useState(Screen.WELCOME);
@@ -62,7 +63,7 @@ export default function Component() {
         <div>
           {currentScreen !== Screen.WELCOME &&
             currentScreen !== Screen.ACCESS_WALLET && (
-              <>{isLoading ? <Spinner /> : <DynamicWidget />}</>
+              <>{user ? <Spinner /> : <DynamicWidget />}</>
             )}
         </div>
       </header>
