@@ -114,13 +114,13 @@ export default function HomePage() {
         <div>{isLoading ? <Spinner /> : <DynamicWidget />}</div>
       </header>
 
-      <main className="flex-grow flex flex-col items-center justify-center p-4">
+      <main className="flex-grow flex flex-col items-center justify-center">
         {progressScreens.includes(currentScreen) && (
           <ProgressBar currentScreen={currentScreen} />
         )}
 
         {currentScreen === Screen.WELCOME && (
-          <div className="text-center">
+          <div className="text-center p-4">
             <h1 className="text-4xl font-bold mb-8 tracking-wider">
               Welcome to Silent Wars
             </h1>
@@ -139,7 +139,7 @@ export default function HomePage() {
         )}
 
         {currentScreen === Screen.CONNECT_WALLET && (
-          <div className="text-center">
+          <div className="text-center p-4">
             <h1 className="text-3xl font-bold mb-6 tracking-wider">
               Access Dynamic Wallet
             </h1>
@@ -153,7 +153,7 @@ export default function HomePage() {
         )}
 
         {currentScreen === Screen.CHOOSE_BRIEF && (
-          <div className="text-center w-full max-w-md">
+          <div className="text-center w-full max-w-md p-4">
             <h1 className="text-3xl font-bold mb-4 tracking-wider">
               Let's skin into the game
             </h1>
@@ -195,7 +195,7 @@ export default function HomePage() {
         )}
 
         {currentScreen === Screen.STAKE && (
-          <div className="text-center w-full max-w-md">
+          <div className="text-center w-full max-w-md p-4">
             <h1 className="text-3xl font-bold mb-4 tracking-wider">
               Stake ETH
             </h1>
@@ -222,7 +222,7 @@ export default function HomePage() {
         )}
 
         {currentScreen === Screen.GAME_EXPLANATION && (
-          <div className="text-center w-full max-w-md">
+          <div className="text-center w-full max-w-md p-4">
             <h1 className="text-3xl font-bold mb-4 tracking-wider">Game</h1>
             <p className="mb-8 tracking-wider text-lg">Farm, Battle, Govern</p>
             <div className="mb-4 text-left text-lg tracking-wider">
@@ -262,7 +262,7 @@ export default function HomePage() {
           <div className="relative w-full h-full max-w-md mx-auto">
             {/* Global State 组件 */}
             <div
-              className="absolute top-4 left-4 right-4 bg-white rounded-lg shadow-md border border-gray-200 p-4 cursor-pointer z-10"
+              className="absolute top-2 left-2 right-2 bg-white rounded-lg shadow-md border border-gray-200 p-4 cursor-pointer z-10"
               onClick={() => setIsGlobalStateModalOpen(true)}
             >
               <div className="text-xl font-bold mb-2 text-black">
@@ -275,12 +275,12 @@ export default function HomePage() {
             </div>
 
             {/* 游戏主屏幕 */}
-            <div className="absolute top-5 left-5 right-5 bottom-5 bg-gray-200 rounded-lg overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-200 rounded-lg overflow-hidden">
               <PhaserGame />
             </div>
 
             {/* 全局数字屏幕 */}
-            <div className="absolute right-0 top-1/3 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-l-lg shadow-md border border-gray-200 p-2">
+            <div className="absolute right-2 top-52 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-lg shadow-md border border-gray-200 p-2">
               <div className="flex flex-col space-y-2">
                 <div className="flex items-center justify-end space-x-1">
                   <span className="text-xl font-bold text-black">789</span>
@@ -302,7 +302,7 @@ export default function HomePage() {
             </div>
 
             {/* 底部状态栏 */}
-            <div className="absolute bottom-20 left-5 right-5 flex justify-between">
+            <div className="absolute bottom-24 left-2 right-2 flex justify-between">
               <div className="bg-white bg-opacity-70 rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
                 <span className="text-3xl">🔋</span>
                 <span className="text-2xl text-gray-600">98/100</span>
@@ -315,7 +315,7 @@ export default function HomePage() {
 
             {/* 周围状态栏 */}
             <div
-              className="absolute bottom-2 left-3 right-3 bg-white rounded-lg shadow-md border border-gray-200 p-2 cursor-pointer"
+              className="absolute bottom-2 left-2 right-2 bg-white rounded-lg shadow-md border border-gray-200 p-2 cursor-pointer"
               onClick={() => setIsAroundYouDrawerOpen(true)}
             >
               <div className="text-2xl font-bold mb-1 text-black">
