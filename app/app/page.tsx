@@ -6,6 +6,7 @@ import {
   useTelegramLogin,
   useDynamicContext,
 } from "../lib/dynamic";
+import Spinner from "./Spinner";
 
 const Screen = {
   WELCOME: "welcome",
@@ -17,10 +18,25 @@ const Screen = {
 };
 
 export default function Component() {
-  const { user } = useDynamicContext();
-
+  const { sdkHasLoaded, user } = useDynamicContext();
   const { telegramSignIn } = useTelegramLogin();
+  const [isLoading, setIsLoading] = useState(true);
   const [currentScreen, setCurrentScreen] = useState(Screen.WELCOME);
+
+  useEffect(() => {
+    if (!sdkHasLoaded) {
+      return;
+    }
+
+    const signIn = async () => {
+      if (!user) {
+        await telegramSignIn({ forceCreateUser: true });
+      }
+      setIsLoading(false);
+    };
+
+    signIn();
+  }, [sdkHasLoaded, user, telegramSignIn, currentScreen]);
 
   const handleNextScreen = () => {
     const screenOrder = [
@@ -37,6 +53,7 @@ export default function Component() {
   };
 
   const handleConnect = async () => {
+    console.log("handle connect", user);
     if (!user) {
       await telegramSignIn({ forceCreateUser: true });
     }
@@ -64,7 +81,7 @@ export default function Component() {
             className="w-8 h-8 inline-block mr-2"
           />
         </div>
-        <div>{user && <DynamicWidget />}</div>
+        <div>{isLoading ? <Spinner /> : <DynamicWidget />}</div>
       </header>
 
       <main className="flex-grow flex flex-col items-center justify-center p-4">
