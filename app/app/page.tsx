@@ -56,8 +56,6 @@ export default function HomePage() {
       return;
     }
 
-    console.log("log");
-
     const signIn = async () => {
       if (!user) {
         await telegramSignIn({ forceCreateUser: true });

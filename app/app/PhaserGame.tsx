@@ -1,18 +1,30 @@
-import React, { useEffect, useRef } from "react";
+import { GameAbi } from "@/contracts/abi/Game";
+import { addresses } from "@/contracts/addresses";
+import React, { useEffect, useRef, useState } from "react";
+import { Address, createPublicClient, http } from "viem";
+import { readContract } from "viem/actions";
+import { useDynamicContext } from "../lib/dynamic";
+
+import SpawnModal from "../app/components/SpawnModal";
 
 enum GAME_STATES {
+  NONE = "none",
   IDLE = "idle",
   COMBAT = "combat",
   HARVESTING = "harvesting",
 }
 
 const PhaserGame = () => {
+  const [isSpawnModalOpen, setIsSpawnModalOpen] = useState(false);
+
   const gameRef: any = useRef(null); // To keep reference to the game DOM element
   const gameInstanceRef: any = useRef(null); // To store the Phaser game instance
   let bg_foreground: any;
   let bg_mid: any;
   let bg_far: any;
   let bg_container: any;
+
+  const { primaryWallet } = useDynamicContext();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -48,6 +60,50 @@ const PhaserGame = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const process = async () => {
+      if (!primaryWallet) {
+        throw new Error("Wallet not connected");
+      }
+      const address = primaryWallet.address as Address;
+
+      const publicClient = createPublicClient({
+        transport: http("https://sepolia.base.org"),
+      });
+
+      const worldIndex = await readContract(publicClient, {
+        address: addresses.GAME,
+        abi: GameAbi,
+        functionName: "worldIndex",
+      });
+
+      const checkPlayerIndex = async () => {
+        const playerIndex = await readContract(publicClient, {
+          address: addresses.GAME,
+          abi: GameAbi,
+          functionName: "senderToPlayerIndexes",
+          args: [worldIndex, address],
+        });
+
+        // Check if playerIndex is greater than 0
+        if (playerIndex > BigInt(0)) {
+          gameInstanceRef.current.gameState = GAME_STATES.IDLE;
+          gameInstanceRef.current.player.visible = true;
+          setIsSpawnModalOpen(false);
+        } else {
+          setIsSpawnModalOpen(true);
+          // Retry after a delay if playerIndex is still 0
+          setTimeout(checkPlayerIndex, 3000); // Retry every 3 seconds
+        }
+      };
+
+      // Start checking playerIndex
+      checkPlayerIndex();
+    };
+
+    process();
+  }, []);
+
   function preload_fx() {
     const activeScene = gameInstanceRef.current.scene.scenes[0];
     activeScene.load.spritesheet("hitEffect", "phaser/fx/hit.png", {
@@ -57,7 +113,7 @@ const PhaserGame = () => {
   }
 
   function preload(this: Phaser.Scene) {
-    gameInstanceRef.current.gameState = GAME_STATES.IDLE;
+    gameInstanceRef.current.gameState = GAME_STATES.NONE;
     // Load assets here
     this.load.image("bg_mid", "phaser/bg/city/1.png");
     this.load.image("bg_foreground", "phaser/bg/city/foreground.png");
@@ -132,6 +188,7 @@ const PhaserGame = () => {
     const player_Y = 400;
     const player = this.add.sprite(player_X, player_Y, "noun1");
     player.setScale(1);
+    player.visible = false;
     gameInstanceRef.current.player = player;
     gameInstanceRef.current.player_X = player_X;
     gameInstanceRef.current.player_Y = player_Y;
@@ -399,6 +456,7 @@ const PhaserGame = () => {
           margin: "auto",
         }} // Adjust based on your game size
       />
+      {isSpawnModalOpen && <SpawnModal />}
     </>
   );
 };
