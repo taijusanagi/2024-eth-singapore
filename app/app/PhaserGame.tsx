@@ -115,9 +115,13 @@ const PhaserGame = () => {
         gameInstanceRef.current.player_X = player_X;
         gameInstanceRef.current.player_Y = player_Y;
 
-        const opponent = this.add.sprite(canvasWidth / 2 + 150, player_Y, 'noun2');
+        const opponent = this.add.sprite(canvasWidth / 2 + 150, player_Y + 30, 'noun2');
+        opponent.setOrigin(0.7, 0.7);
         opponent.flipX = true;
+        opponent.visible = false;
         gameInstanceRef.current.opponent = opponent;
+        gameInstanceRef.current.opponent_X = canvasWidth / 2 + 150;
+        gameInstanceRef.current.opponent_Y = player_Y + 30;
 
         const pickaxe = this.add.sprite(player_X + 30, player_Y, 'pickaxe');
         pickaxe.setScale(1.5);
@@ -293,6 +297,9 @@ const PhaserGame = () => {
         gameInstanceRef.current.player_idle_tween.pause();
         gameInstanceRef.current.pickaxe.visible = false;
         gameInstanceRef.current.resourceNode.visible = false;
+        gameInstanceRef.current.opponent.x = gameInstanceRef.current.opponent_X;
+        gameInstanceRef.current.opponent.y = gameInstanceRef.current.opponent_Y;
+        gameInstanceRef.current.opponent.angle = 0;
 
         PlayHitFX(player.x, player.y);
 
@@ -337,6 +344,7 @@ const PhaserGame = () => {
         gameInstanceRef.current.player_idle_tween.resume();
         gameInstanceRef.current.pickaxe.visible = false;
         gameInstanceRef.current.resourceNode.visible = false;
+        gameInstanceRef.current.opponent.visible = false;
     }
 
     function PlayerFight() {
