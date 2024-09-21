@@ -27,7 +27,7 @@ const progressScreens = [
   Screen.GAME_EXPLANATION,
 ];
 
-const ProgressBar = ({ currentScreen }) => {
+const ProgressBar = ({ currentScreen }: { currentScreen: string }) => {
   const currentIndex = progressScreens.indexOf(currentScreen);
 
   return (
@@ -35,9 +35,8 @@ const ProgressBar = ({ currentScreen }) => {
       {progressScreens.map((screen, index) => (
         <div
           key={index}
-          className={`h-1 w-16 mx-1 rounded-full ${
-            index <= currentIndex ? 'bg-blue-500' : 'bg-gray-300'
-          }`}
+          className={`h-1 w-16 mx-1 rounded-full ${index <= currentIndex ? 'bg-blue-500' : 'bg-gray-300'
+            }`}
         ></div>
       ))}
     </div>
@@ -159,17 +158,16 @@ function AppContent() {
               <button
                 key={index}
                 onClick={handleNextScreen}
-                className={`w-full py-4 px-6 mb-4 rounded-xl text-left ${
-                  index === 0
-                    ? "bg-blue-600"
-                    : index === 1
-                      ? "bg-purple-600"
-                      : "bg-red-600"
+                className={`w-full py-4 px-6 mb-4 rounded-xl text-left ${index === 0
+                  ? "bg-blue-600"
+                  : index === 1
+                    ? "bg-purple-600"
+                    : "bg-red-600"
                   }`}
               >
                 <div className="flex items-center">
                   <img
-                    src={`/${faction.toLowerCase()}-icon.png`}
+                    src={`/icons/${faction.toLowerCase()}-icon.png`}
                     alt={`${faction} icon`}
                     className="w-8 h-8 mr-4"
                   />
@@ -179,8 +177,8 @@ function AppContent() {
                       {index === 0
                         ? "Freedom for all humans"
                         : index === 1
-                        ? "Join the allmighty"
-                        : "Huh?"}
+                          ? "Join the allmighty"
+                          : "Huh?"}
                     </div>
                   </div>
                 </div>
@@ -253,7 +251,7 @@ function AppContent() {
         {currentScreen === Screen.GAME && (
           <div className="relative w-full h-full max-w-md mx-auto">
             {/* Global State 组件 */}
-            <div 
+            <div
               className="absolute top-4 left-4 right-4 bg-white rounded-lg shadow-md border border-gray-200 p-4 cursor-pointer z-10"
               onClick={() => setIsGlobalStateModalOpen(true)}
             >
@@ -265,12 +263,12 @@ function AppContent() {
             </div>
 
             {/* 游戏主屏幕 */}
-            <div className="absolute top-24 left-5 right-5 bottom-36 bg-gray-200 rounded-lg overflow-hidden">
+            <div className="absolute top-5 left-5 right-5 bottom-5 bg-gray-200 rounded-lg overflow-hidden">
               <PhaserGame />
             </div>
 
             {/* 全局数字屏幕 */}
-            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-l-lg shadow-md border border-gray-200 p-2">
+            <div className="absolute right-0 top-1/3 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-l-lg shadow-md border border-gray-200 p-2">
               <div className="flex flex-col space-y-2">
                 <div className="flex items-center justify-end space-x-1">
                   <span className="text-xl font-bold text-black">789</span>
@@ -293,18 +291,18 @@ function AppContent() {
 
             {/* 底部状态栏 */}
             <div className="absolute bottom-20 left-5 right-5 flex justify-between">
-              <div className="bg-white rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
+              <div className="bg-white bg-opacity-70 rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
                 <span className="text-3xl">🔋</span>
                 <span className="text-2xl text-gray-600">98/100</span>
               </div>
-              <div className="bg-white rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
+              <div className="bg-white bg-opacity-70 rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
                 <span className="text-3xl">💰</span>
                 <span className="text-2xl text-gray-600">1,234</span>
               </div>
             </div>
 
             {/* 周围状态栏 */}
-            <div 
+            <div
               className="absolute bottom-2 left-3 right-3 bg-white rounded-lg shadow-md border border-gray-200 p-2 cursor-pointer"
               onClick={() => setIsAroundYouDrawerOpen(true)}
             >
@@ -347,7 +345,7 @@ export default function Component() {
   return (
     <DynamicContextProvider
       settings={{
-        environmentId: process.env.NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID,
+        environmentId: process.env.NEXT_PUBLIC_DYNAMIC_ENV_ID || "defaultEnvironmentId",
       }}
     >
       <AppContent />
