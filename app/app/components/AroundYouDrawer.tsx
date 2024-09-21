@@ -15,12 +15,14 @@ interface Item {
 }
 
 interface AroundYouDrawerProps {
+  triggerFight: () => void;
   onClose: () => void;
   nearestMonster: any;
   nearestResource: any;
 }
 
 const AroundYouDrawer: React.FC<AroundYouDrawerProps> = ({
+  triggerFight,
   onClose,
   nearestMonster,
   nearestResource,
@@ -91,6 +93,7 @@ const AroundYouDrawer: React.FC<AroundYouDrawerProps> = ({
         chain: flowTestnet,
         account: address,
       });
+      triggerFight()
     }
     if (action === "Collect") {
       await writeContract(walletClient, {

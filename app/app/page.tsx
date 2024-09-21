@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   DynamicWidget,
   useTelegramLogin,
@@ -72,6 +72,14 @@ export default function HomePage() {
     BigInt(0),
     BigInt(0),
   ]);
+
+  const phaserGameRef = useRef<any>(null);
+
+  const triggerFight = () => {
+    if (phaserGameRef.current) {
+        phaserGameRef.current.PlayerFight(); // Call the PlayerFight method
+    }
+  };
 
   useEffect(() => {
     if (!sdkHasLoaded) {
@@ -353,7 +361,7 @@ export default function HomePage() {
 
             {/* 游戏主屏幕 */}
             <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-200 rounded-lg overflow-hidden">
-              <PhaserGame />
+              <PhaserGame ref={phaserGameRef}/>
             </div>
 
             {/* 全局数字屏幕 */}
@@ -434,6 +442,7 @@ export default function HomePage() {
 
         {isAroundYouDrawerOpen && (
           <AroundYouDrawer
+            triggerFight={triggerFight}
             onClose={() => setIsAroundYouDrawerOpen(false)}
             nearestMonster={nearestMonster}
             nearestResource={nearestResource}
