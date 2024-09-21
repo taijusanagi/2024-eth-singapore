@@ -83,28 +83,28 @@ const PhaserGame = () => {
         bg_far = this.add.tileSprite(0, 0, this.scale.width, this.textures.get('bg_far').getSourceImage().height, 'bg_far').setOrigin(0, 0);
         bg_far.setScale(2);
 
-        bg_mid = this.add.tileSprite(0, this.textures.get('bg_mid').getSourceImage().height - 100, this.scale.width, this.textures.get('bg_mid').getSourceImage().height, 'bg_mid').setOrigin(0, 0);
-        bg_foreground = this.add.tileSprite(0, this.textures.get('bg_foreground').getSourceImage().height - 100, this.scale.width, this.textures.get('bg_foreground').getSourceImage().height, 'bg_foreground').setOrigin(0, 0);
+        bg_mid = this.add.tileSprite(0, this.textures.get('bg_mid').getSourceImage().height - 140, this.scale.width, this.textures.get('bg_mid').getSourceImage().height, 'bg_mid').setOrigin(0, 0);
+        bg_foreground = this.add.tileSprite(0, this.textures.get('bg_foreground').getSourceImage().height - 140, this.scale.width, this.textures.get('bg_foreground').getSourceImage().height, 'bg_foreground').setOrigin(0, 0);
 
         bg_container.add(bg_far);
         bg_container.add(bg_mid);
         bg_container.add(bg_foreground);
         bg_container.setScale(2);
 
-        const bg_wall = this.add.tileSprite(0, 560,
+        const bg_wall = this.add.tileSprite(0, 480,
             this.scale.width * 2, 1000, 'bg_wall').setOrigin(0, 0);
         bg_wall.setScale(0.5);
 
         create_fx();
 
-        const resourceNode = this.add.sprite(450, 500, 'node');
+        const resourceNode = this.add.sprite(360, 420, 'node');
         resourceNode.setScale(0.5);
         resourceNode.visible = false;
         gameInstanceRef.current.resourceNode = resourceNode;
 
         const canvasWidth = this.cameras.main.width;
         const player_X = canvasWidth / 2;
-        const player_Y = 480;
+        const player_Y = 400;
         const player = this.add.sprite(player_X, player_Y, 'noun1');
         player.setScale(1);
         gameInstanceRef.current.player = player;
@@ -148,12 +148,6 @@ const PhaserGame = () => {
             ease: 'Sine.easeInOut',  // Easing function for smooth motion
             yoyo: true,  // Return to the original y position
             repeat: -1,  // Repeat forever
-            onYoyo: () => {
-                console.log('Going back down');  // Optional: callback when returning to original position
-            },
-            onComplete: () => {
-                console.log('Bounce complete');  // Optional: callback when the tween completes
-            }
         });
 
         // Tween to simulate bouncing or walking up and down
@@ -164,12 +158,6 @@ const PhaserGame = () => {
             ease: 'Sine.easeInOut',  // Easing function for smooth motion
             yoyo: true,  // Return to the original y position
             repeat: -1,  // Repeat forever
-            onYoyo: () => {
-                console.log('Going back down');  // Optional: callback when returning to original position
-            },
-            onComplete: () => {
-                console.log('Bounce complete');  // Optional: callback when the tween completes
-            }
         });
     }
 
@@ -247,7 +235,7 @@ const PhaserGame = () => {
         gameInstanceRef.current.resourceNode.visible = true;
 
         launchCoinStream(gameInstanceRef.current.player_X + 100, gameInstanceRef.current.player_Y + 80,
-            gameInstanceRef.current.player_X + 270, 100);
+            gameInstanceRef.current.player_X + 200, 100);
     }
 
     function Faint(target: any) {
