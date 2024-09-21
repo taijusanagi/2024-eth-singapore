@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Hex, createWalletClient, http } from "viem";
+import { Hex, createPublicClient, createWalletClient, http } from "viem";
 import { writeContract } from "viem/actions";
 import { privateKeyToAccount } from "viem/accounts";
 import {} from "viem";
@@ -24,9 +24,13 @@ export async function POST(req: NextRequest) {
 
     const account = privateKeyToAccount(ownerEvmPrivateKey);
 
-    const client = createWalletClient({
+    const walletClient = createWalletClient({
       transport: http(jsonRpcUrl),
       account,
+    });
+
+    const publicClient = createPublicClient({
+      transport: http(jsonRpcUrl),
     });
 
     const unserializedOwnerMaciPublicKey =
@@ -38,7 +42,7 @@ export async function POST(req: NextRequest) {
     const messageTreeDepth = 2;
     const voteOptionTreeDepth = 2;
 
-    const txResponse = await writeContract(client, {
+    const hash = await writeContract(walletClient, {
       address: addresses.MACI,
       abi: MACIAbi,
       functionName: "deployPoll",
@@ -62,7 +66,13 @@ export async function POST(req: NextRequest) {
       chain: hardhat,
     });
 
-    console.log("txResponse", txResponse);
+    const receipt = await publicClient.waitForTransactionReceipt({ hash });
+    const firstBytes32 = receipt.logs[receipt.logs.length - 1].data.slice(
+      2,
+      66
+    );
+    const createdPollId = BigInt(`0x${firstBytes32}`);
+    console.log("createdPollId", createdPollId);
 
     return NextResponse.json({ message: "Data processed successfully" });
   } catch (error) {
