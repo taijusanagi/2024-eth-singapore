@@ -1,6 +1,6 @@
 import { GameAbi } from "@/contracts/abi/Game";
 import { addresses } from "@/contracts/addresses";
-import React, { useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Address, createPublicClient, http } from "viem";
 import { readContract } from "viem/actions";
 import { useDynamicContext } from "../lib/dynamic";
@@ -15,7 +15,7 @@ enum GAME_STATES {
     HARVESTING = "harvesting",
 }
 
-const PhaserGame = () => {
+const PhaserGame = forwardRef((props, ref) => {
     const [isSpawnModalOpen, setIsSpawnModalOpen] = useState(false);
 
     const gameRef: any = useRef(null); // To keep reference to the game DOM element
@@ -60,6 +60,12 @@ const PhaserGame = () => {
             }
         };
     }, []);
+
+    useImperativeHandle(ref, () => ({
+        PlayerFight: () => {
+            PlayAttack();
+        }
+    }));
 
     useEffect(() => {
         const process = async () => {
@@ -474,6 +480,6 @@ const PhaserGame = () => {
             {isSpawnModalOpen && <SpawnModal />}
         </>
     );
-};
+});
 
 export default PhaserGame;
