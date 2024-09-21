@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ThumbsUp, ThumbsDown, MinusCircle, X } from "lucide-react";
+import { X } from "lucide-react";
 
 export const Voting = ({
   id,

@@ -3,6 +3,17 @@ pragma solidity ^0.8.20;
 
 import { InitialVoiceCreditProxy } from "./InitialVoiceCreditProxy.sol";
 
+struct Player {
+  uint256 x;
+  uint256 y;
+  uint256 resources;
+  uint256 energy;
+}
+
+interface Game {
+  function getPlayerByAddress(address playerAddress) external view returns (Player memory);
+}
+
 /// @title ConstantInitialVoiceCreditProxy
 /// @notice This contract allows to set a constant initial voice credit balance
 /// for MACI's voters.
@@ -16,9 +27,13 @@ contract ConstantInitialVoiceCreditProxy is InitialVoiceCreditProxy {
     balance = _balance;
   }
 
+  // hardcode the deployed conract
+  address public gameAddress = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
+
   /// @notice Returns the constant balance for any new MACI's voter
   /// @return balance
-  function getVoiceCredits(address, bytes memory) public view override returns (uint256) {
-    return balance;
+  function getVoiceCredits(address sender, bytes memory) public view override returns (uint256) {
+    Player memory player = Game(gameAddress).getPlayerByAddress(sender);
+    return player.resources;
   }
 }
