@@ -78,7 +78,7 @@ const AroundYouDrawer: React.FC<AroundYouDrawerProps> = ({ onClose }) => {
                 <div className="mt-2 p-4 bg-white rounded-lg border border-gray-200">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center space-x-2">
-                      <img src="/path/to/player-icon.png" alt="Player" className="w-8 h-8" />
+                      <img src="/phaser/chars/nouns/3.png" alt="Player" className="w-8 h-8" />
                       <div>
                         <div className="text-sm text-black">Player</div>
                         <div className="font-bold text-black">alice.eth</div>
