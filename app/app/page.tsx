@@ -284,7 +284,7 @@ export default function HomePage() {
         {currentScreen === Screen.STAKE && (
           <div className="text-center w-full max-w-md p-4">
             <h1 className="text-3xl font-bold mb-4 tracking-wider">
-              Verification or Stake
+              Stake or Human Verification
             </h1>
             <p className="mb-8 text-lg tracking-wider">
               For that's what your belief
@@ -307,10 +307,11 @@ export default function HomePage() {
             </button>
             <div className="mb-4 bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-full w-full text-lg tracking-wider">
               <IDKitWidget
-                app_id="app_staging_a57b7a313c3815564cc8eb4e3255551c" // obtained from the Developer Portal
+                app_id="app_d3efa40cc232633d00a3c271facefa90" // obtained from the Developer Portal
                 action="silent-wars" // this is your action name from the Developer Portal
                 onSuccess={(result)=> {
                   console.log("result", result)
+                  handleNextScreen()
                 }}
                 onError={(error)=> {
                   console.log("error", error)
