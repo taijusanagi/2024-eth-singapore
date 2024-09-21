@@ -51,14 +51,18 @@ export default function Component() {
 
   return (
     <div className="h-screen bg-gray-900 text-white flex flex-col">
-      <header className="w-full p-4 flex justify-between items-center z-10 border-b border-gray-700">
+      <header className="w-full p-4 flex justify-between items-center">
         <div
           className="text-xl font-bold cursor-pointer"
           onClick={() => {
             setCurrentScreen(Screen.WELCOME);
           }}
         >
-          ETHGlobal
+          <img
+            src="/logo.png"
+            alt="logo"
+            className="w-8 h-8 inline-block mr-2"
+          />
         </div>
         <div>{user && <DynamicWidget />}</div>
       </header>
