@@ -1,10 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 
 const PhaserGame = () => {
-    const gameRef = useRef(null); // To keep reference to the game DOM element
+    const gameRef: any = useRef(null); // To keep reference to the game DOM element
     const gameInstanceRef: any = useRef(null); // To store the Phaser game instance
     let player: any;
     let glasses: any;
+    let attackTween: any;
+    let background1: any;
+    let background2: any;
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -42,7 +45,8 @@ const PhaserGame = () => {
 
     function preload(this: Phaser.Scene) {
         // Load assets here
-        this.load.image('bg_main', 'phaser/bg1.png');
+        this.load.image('bg_main', 'phaser/bg/city/1.png');
+        this.load.image('bg_foreground', 'phaser/bg/city/foreground.png');
 
         this.load.image('glasses1', 'phaser/nouns/1.png');
         this.load.image('glasses2', 'phaser/nouns/2.png');
@@ -56,7 +60,7 @@ const PhaserGame = () => {
         this.load.image('glasses10', 'phaser/nouns/10.png');
         this.load.image('glasses11', 'phaser/nouns/11.png');
 
-        this.load.spritesheet('playerWalk', 'phaser/chars/1/Walk.png', {
+        this.load.spritesheet('noun1', 'phaser/chars/nouns/1.png', {
             frameWidth: 128,  // Replace with your sprite width
             frameHeight: 128  // Replace with your sprite height
         });
@@ -75,78 +79,101 @@ const PhaserGame = () => {
     };
 
     function create(this: Phaser.Scene) {
-        // Use 'this' which now refers to Phaser.Scene, so TypeScript understands it's not undefined
-        this.add.text(100, 100, 'Hello Phaser in React', { color: '#fff' });
+        background1 = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'bg_main').setOrigin(0, 0);
+        background2 = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'bg_foreground').setOrigin(0, 0);
 
         var bg_layer = this.add.container();
         bg_layer.add(this.add.image(0, 0, 'bg_main').setOrigin(0, 0));
 
         const canvasWidth = this.cameras.main.width;
         const canvasHeight = this.cameras.main.height;
-        player = this.add.sprite(canvasWidth / 2, canvasHeight / 4, 'player');
-        player.setScale(4);
-
-        // Create the nouns sprite
-        glasses = this.add.sprite(canvasWidth / 2 - 8, canvasHeight / 4 + 5, 'glasses2');  // Position hat above player's head (adjust -30 based on your character size)
-        glasses.setScale(0.4);
-
-        // Create the walk animation
-        // Parameters: {key: 'animationName', frames: 'key', frameRate, repeat}
-        this.anims.create({
-            key: 'walk',
-            frames: this.anims.generateFrameNumbers('playerWalk', { start: 0, end: 7 }), // Adjust based on your sheet
-            frameRate: 10,  // Speed of the animation
-            repeat: -1      // Loop indefinitely
-        });
-
-        this.anims.create({
-            key: 'run',
-            frames: this.anims.generateFrameNumbers('playerRun', { start: 0, end: 7 }), // Adjust based on your sheet
-            frameRate: 10,  // Speed of the animation
-            repeat: -1      // Loop indefinitely
-        });
-
-        // Create fight animation
-        this.anims.create({
-            key: 'fight',
-            frames: this.anims.generateFrameNumbers('playerFight', { start: 0, end: 5 }), // Adjust based on fight animation frames
-            frameRate: 8,
-            repeat: 0
-        });
-        this.anims.create({
-            key: 'fight2',
-            frames: this.anims.generateFrameNumbers('playerFight2', { start: 0, end: 11 }), // Adjust based on fight animation frames
-            frameRate: 8,
-            repeat: 0
-        });
-
-        // Play the walk animation
-        player.anims.play('walk');
+        player = this.add.sprite(canvasWidth / 2, canvasHeight / 4, 'noun1');
+        player.setScale(1);
 
         // Listen for the 'animationcomplete' event to switch back to walk after fight animation ends
-        player.on('animationcomplete', (animation: { key: string; }) => {
+        /*player.on('animationcomplete', (animation: { key: string; }) => {
             if (animation.key === 'fight' || animation.key === 'fight2') {
                 player.anims.play('walk'); // Switch back to walk animation
                 glasses.setVisible(true);
             }
+        });*/
+
+        // Tween to simulate bouncing or walking up and down
+        this.tweens.add({
+            targets: player,  // The sprite to animate
+            y: canvasHeight / 4 - 10,  // Target y position to "bounce" up to
+            duration: 300,  // Time to reach the target (in ms)
+            ease: 'Sine.easeInOut',  // Easing function for smooth motion
+            yoyo: true,  // Return to the original y position
+            repeat: -1,  // Repeat forever
+            onYoyo: () => {
+                console.log('Going back down');  // Optional: callback when returning to original position
+            },
+            onComplete: () => {
+                console.log('Bounce complete');  // Optional: callback when the tween completes
+            }
         });
     }
 
-    const update = () => {
-        // Game loop logic
-    };
+    function update() {
+        // Scroll the background by updating the tile position
+        if (background1) {
+            background1.tilePositionX += 1;  // Move background to the left for scrolling effect
+        }
+        if (background2) {
+            background2.tilePositionX += 2;  // Move background to the left for scrolling effect
+        }
+    }
+
+    function PlayAttack() {
+        const activeScene = gameInstanceRef.current.scene.scenes[0];
+
+        // Set the range for left and right movement (adjust the values as needed)
+        const initialX = player.x;
+        const leftMove = initialX - 20;  // Move 50 pixels to the left
+        const rightMove = initialX + 50;  // Move 50 pixels to the right
+
+        attackTween = activeScene.tweens.add({
+            targets: player,  // The sprite to animate
+            angle: 15,  // Tilt forward (rotate by 15 degrees)
+            x: rightMove,  // Move right first
+            duration: 100,  // Time to tilt forward and move right (in ms)
+            ease: 'Sine.easeInOut',  // Easing function for smooth motion
+            yoyo: true,  // Return to the original angle and position
+            repeat: 1,  // Play the forward and backward motion once
+            onYoyo: () => {
+                console.log('Returning to original angle');
+            },
+            onComplete: () => {
+                console.log('Attack finished');
+                // After the first attack (right movement), create another tween to move left
+                activeScene.tweens.add({
+                    targets: player,
+                    x: leftMove,  // Move to the left
+                    duration: 100,
+                    ease: 'Sine.easeInOut',
+                    yoyo: true,  // Return to the original position
+                    onStart: () => {
+                        console.log('Left move started');
+                    },
+                    onComplete: () => {
+                        console.log('Left move completed');
+                    }
+                });
+            }
+        });
+    }
+
 
     function PlayerRun() {
         player.anims.play('run');
     }
 
     function PlayerFight() {
-        player.anims.play('fight');
-        glasses.setVisible(false);
+        PlayAttack();
     }
     function PlayerFight2() {
-        player.anims.play('fight2');
-        glasses.setVisible(false);
+        PlayAttack();
     }
 
     function PlayerEquip() {
@@ -165,7 +192,7 @@ const PhaserGame = () => {
                 onClick={PlayerFight2}>Shoot</button>
             <div
                 ref={gameRef}
-                style={{ width: '100%', height: '100vh' }} // Adjust based on your game size
+                style={{ width: '100%', height: '100vh', maxWidth: '640px', margin: 'auto' }} // Adjust based on your game size
             />
         </>
     );
