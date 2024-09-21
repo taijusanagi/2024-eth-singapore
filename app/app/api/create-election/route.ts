@@ -15,7 +15,7 @@ const redisClient = createClient({
 
 export async function POST(req: NextRequest) {
   try {
-    const { content } = await req.json();
+    const { content, options } = await req.json();
 
     const ownerEvmPrivateKey = process.env.OWNER_EVM_PRIVATE_KEY as Hex;
     const ownerMaciPublicKey = process.env.OWNER_MACI_PUBLIC_KEY;
@@ -80,8 +80,11 @@ export async function POST(req: NextRequest) {
     );
     const createdPollId = BigInt(`0x${firstBytes32}`).toString();
     console.log("createdPollId", createdPollId);
-    await redisClient.set(`poll:${createdPollId}`, content);
-    return NextResponse.json({ message: "Data processed successfully" });
+    await redisClient.set(
+      `poll:${createdPollId}`,
+      JSON.stringify({ content, options })
+    );
+    return NextResponse.json({ createdPollId });
   } catch (error) {
     console.log("error", error);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });

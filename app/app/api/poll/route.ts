@@ -20,11 +20,11 @@ export async function GET(req: NextRequest) {
       await redisClient.connect();
     }
     const redisKey = `poll:${id}`;
-    let content = await redisClient.get(redisKey);
-    if (!content) {
+    let poll = await redisClient.get(redisKey);
+    if (!poll) {
       throw new Error("Poll not found");
     }
-    return NextResponse.json({ content });
+    return NextResponse.json(JSON.parse(poll));
   } catch (error) {
     console.log("error", error);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
