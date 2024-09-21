@@ -11,6 +11,9 @@ import { hardhat } from "viem/chains";
 
 const redisClient = createClient({
   url: process.env.REDIS_URL,
+  socket: {
+		tls: true,
+	},
 });
 
 export async function POST(req: NextRequest) {

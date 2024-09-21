@@ -4,6 +4,9 @@ import { createClient } from "redis";
 
 const redisClient = createClient({
   url: process.env.REDIS_URL,
+  socket: {
+		tls: true,
+	},
 });
 
 export async function GET(req: NextRequest) {

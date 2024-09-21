@@ -99,12 +99,15 @@ export default function HomePage() {
     signIn();
   }, [sdkHasLoaded, user]);
 
+  const [address, setAddress] = useState("");
+
   useEffect(() => {
     if (!primaryWallet) {
       return;
     }
     const process = async () => {
       const address = primaryWallet.address as Address;
+      setAddress(address);
 
       const publicClient = createPublicClient({
         transport: http(RPC),
@@ -310,6 +313,7 @@ export default function HomePage() {
               <IDKitWidget
                 app_id="app_d3efa40cc232633d00a3c271facefa90" // obtained from the Developer Portal
                 action="silent-wars" // this is your action name from the Developer Portal
+                signal={address}
                 onSuccess={async (result)=> {
                   console.log("result", result)
                   const response = await fetch("/api/world-id", {
@@ -317,7 +321,7 @@ export default function HomePage() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({proof:result}),
+                    body: JSON.stringify({ proof:result, signal: address }),
                 });
                 console.log("response", response)
         

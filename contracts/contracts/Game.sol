@@ -18,7 +18,7 @@ contract Game {
     uint256 public playerCount;
     uint256 public mapSize = 100;
     uint256 public initialResources = 100;
-    uint256 public initialEnergy = 100;
+    uint256 public initialEnergy = 1000;
     uint256 public maxResourceCount = 20;
     uint256 public maxEnemyCount = 20;
 
