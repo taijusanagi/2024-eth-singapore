@@ -6,12 +6,16 @@ import {} from "viem";
 import { addresses } from "@/contracts/addresses";
 import { MACIAbi } from "@/contracts/abi/MACI";
 import { PubKey } from "maci-domainobjs";
-
+import { createClient } from "redis";
 import { hardhat } from "viem/chains";
+
+const redisClient = createClient({
+  url: process.env.REDIS_URL,
+});
 
 export async function POST(req: NextRequest) {
   try {
-    const {} = await req.json();
+    const { content } = await req.json();
 
     const ownerEvmPrivateKey = process.env.OWNER_EVM_PRIVATE_KEY as Hex;
     const ownerMaciPublicKey = process.env.OWNER_MACI_PUBLIC_KEY;
@@ -20,6 +24,9 @@ export async function POST(req: NextRequest) {
 
     if (!ownerEvmPrivateKey || !ownerMaciPublicKey || !jsonRpcUrl) {
       throw new Error("Required environment variables are not set");
+    }
+    if (!redisClient.isOpen) {
+      await redisClient.connect();
     }
 
     const account = privateKeyToAccount(ownerEvmPrivateKey);
@@ -71,9 +78,9 @@ export async function POST(req: NextRequest) {
       2,
       66
     );
-    const createdPollId = BigInt(`0x${firstBytes32}`);
+    const createdPollId = BigInt(`0x${firstBytes32}`).toString();
     console.log("createdPollId", createdPollId);
-
+    await redisClient.set(`poll:${createdPollId}`, content);
     return NextResponse.json({ message: "Data processed successfully" });
   } catch (error) {
     console.log("error", error);
