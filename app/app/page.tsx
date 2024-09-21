@@ -251,10 +251,10 @@ function AppContent() {
         )}
 
         {currentScreen === Screen.GAME && (
-          <div className="relative w-full h-screen max-w-md mx-auto bg-white overflow-hidden font-['Londrina Solid']">
-            {/* 全局状态 */}
+          <div className="relative w-full h-full max-w-md mx-auto">
+            {/* Global State 组件 */}
             <div 
-              className="absolute top-32 left-5 right-5 bg-white rounded-lg shadow-md border border-gray-200 p-4 cursor-pointer"
+              className="absolute top-4 left-4 right-4 bg-white rounded-lg shadow-md border border-gray-200 p-4 cursor-pointer z-10"
               onClick={() => setIsGlobalStateModalOpen(true)}
             >
               <div className="text-xl font-bold mb-2 text-black">Global State</div>
