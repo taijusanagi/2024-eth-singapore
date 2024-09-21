@@ -53,6 +53,7 @@ const ProgressBar = ({ currentScreen }: { currentScreen: string }) => {
 export default function HomePage() {
   const { sdkHasLoaded, user, setShowAuthFlow, primaryWallet } =
     useDynamicContext();
+    
   const { telegramSignIn } = useTelegramLogin();
   const [isLoading, setIsLoading] = useState(true);
   const [currentScreen, setCurrentScreen] = useState(Screen.WELCOME);
@@ -309,8 +310,17 @@ export default function HomePage() {
               <IDKitWidget
                 app_id="app_d3efa40cc232633d00a3c271facefa90" // obtained from the Developer Portal
                 action="silent-wars" // this is your action name from the Developer Portal
-                onSuccess={(result)=> {
+                onSuccess={async (result)=> {
                   console.log("result", result)
+                  const response = await fetch("/api/world-id", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({proof:result}),
+                });
+                console.log("response", response)
+        
                   handleNextScreen()
                 }}
                 onError={(error)=> {
