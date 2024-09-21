@@ -7,6 +7,7 @@ import {
   useDynamicContext,
 } from "../lib/dynamic";
 import Spinner from "./Spinner";
+import PhaserGame from "./PhaserGame";
 
 const Screen = {
   WELCOME: "welcome",
@@ -119,13 +120,12 @@ export default function Component() {
               <button
                 key={index}
                 onClick={handleNextScreen}
-                className={`w-full py-4 px-6 mb-4 rounded-xl text-left ${
-                  index === 0
+                className={`w-full py-4 px-6 mb-4 rounded-xl text-left ${index === 0
                     ? "bg-blue-600"
                     : index === 1
-                    ? "bg-purple-600"
-                    : "bg-red-600"
-                }`}
+                      ? "bg-purple-600"
+                      : "bg-red-600"
+                  }`}
               >
                 <div className="flex items-center">
                   <div className="w-8 h-8 bg-white rounded-md mr-4"></div>
@@ -193,6 +193,7 @@ export default function Component() {
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-6">Game Screen</h1>
             <p>Game interaction components go here</p>
+            <PhaserGame />
           </div>
         )}
       </main>
