@@ -494,10 +494,10 @@ export class ProofGenerator {
       publicInputs: publicSignals,
     });
 
-    await fs.promises.writeFile(
-      path.resolve(this.outputDir, outputFile),
-      JSON.stringify(proofs[proofs.length - 1], null, 4)
-    );
+    // await fs.promises.writeFile(
+    //   path.resolve(this.outputDir, outputFile),
+    //   JSON.stringify(proofs[proofs.length - 1], null, 4)
+    // );
 
     return proofs;
   }
