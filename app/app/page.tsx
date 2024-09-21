@@ -27,20 +27,16 @@ export default function Main() {
   }, [sdkHasLoaded]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex flex-col items-center justify-center text-white">
-      <div className="flex flex-col items-center justify-center text-center">
-        <div className="mb-6">
-          <div className="inline-flex items-center justify-center">
-            <img src="/logo.png" alt="logo" />
-          </div>
-        </div>
-        <h1 className="text-4xl font-bold mb-4">Onboard the world</h1>
-        <p className="text-lg mb-16">
-          Web3 login for <span className="text-blue-400">everyone</span>.
-        </p>
-
-        {isLoading ? <Spinner /> : <DynamicWidget />}
-      </div>
+    <div className="h-screen bg-gradient-to-b from-gray-900 to-black flex flex-col items-center justify-center text-white">
+      <header className="absolute top-0 left-0 w-full p-4 text-white flex justify-between items-center z-10">
+        <div className="text-xl font-bold">GAME</div>
+        <div>{isLoading ? <Spinner /> : <DynamicWidget />}</div>
+      </header>
+      <iframe
+        className="w-full max-w-sm h-full"
+        src="/Builds/index.html"
+        frameBorder="0"
+      ></iframe>
     </div>
   );
 }
