@@ -424,10 +424,10 @@ export class ProofGenerator {
         );
       }
 
-      await fs.promises.writeFile(
-        this.tallyOutputFile,
-        JSON.stringify(tallyFileData, null, 4)
-      );
+      // await fs.promises.writeFile(
+      //   this.tallyOutputFile,
+      //   JSON.stringify(tallyFileData, null, 4)
+      // );
 
       console.log(`Tally file:\n${JSON.stringify(tallyFileData, null, 4)}\n`);
 
