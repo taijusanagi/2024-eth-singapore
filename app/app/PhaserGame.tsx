@@ -126,6 +126,14 @@ const PhaserGame = () => {
         player = this.add.sprite(player_X, player_Y, 'noun1');
         player.setScale(1);
 
+        // 创建'run'动画
+        this.anims.create({
+            key: 'run',
+            frames: this.anims.generateFrameNumbers('playerRun', { start: 0, end: 7 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
         opponent = this.add.sprite(canvasWidth / 2 + 150, player_Y, 'noun2');
         opponent.flipX = true;
 
@@ -278,14 +286,27 @@ const PhaserGame = () => {
 
 
     function PlayerWalk() {
-        player.anims.play('run');
+        if (player && player.anims) {
+            player.anims.play('run');
+        } else {
+            console.error('Player or player animations not initialized');
+        }
     }
 
     function PlayerFight() {
-        PlayAttack();
+        if (player) {
+            PlayAttack();
+        } else {
+            console.error('Player not initialized');
+        }
     }
+
     function PlayerFight2() {
-        PlayAttack();
+        if (player) {
+            PlayAttack();
+        } else {
+            console.error('Player not initialized');
+        }
     }
 
     function PlayerEquip() {

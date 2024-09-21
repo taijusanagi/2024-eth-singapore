@@ -249,8 +249,7 @@ export default function Component() {
   return (
     <DynamicContextProvider
       settings={{
-        // 在这里添加Dynamic的配置
-        environmentId: "your-environment-id",
+        environmentId: process.env.NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID,
       }}
     >
       <AppContent />
