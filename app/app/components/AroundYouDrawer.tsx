@@ -118,11 +118,10 @@ const AroundYouDrawer: React.FC<AroundYouDrawerProps> = ({
             <button
               key={filter}
               onClick={() => setSelectedFilter(filter)}
-              className={`px-3 py-1 rounded-full ${
-                selectedFilter === filter
-                  ? "bg-black text-white"
-                  : "bg-white text-black border border-gray-300"
-              }`}
+              className={`px-3 py-1 rounded-full ${selectedFilter === filter
+                ? "bg-black text-white"
+                : "bg-white text-black border border-gray-300"
+                }`}
             >
               {filter === "All" ? filter : `${filter} `}
             </button>
@@ -155,7 +154,7 @@ const AroundYouDrawer: React.FC<AroundYouDrawerProps> = ({
                   <div className="flex justify-between items-center">
                     <div className="flex items-center space-x-2">
                       <img
-                        src="/path/to/player-icon.png"
+                        src="/phaser/chars/nouns/3.png"
                         alt="Player"
                         className="w-8 h-8"
                       />
