@@ -5,6 +5,7 @@ import {
   DynamicWidget,
   useTelegramLogin,
   useDynamicContext,
+  DynamicContextProvider
 } from "../lib/dynamic";
 import Spinner from "./Spinner";
 import PhaserGame from "./PhaserGame";
@@ -18,7 +19,30 @@ const Screen = {
   GAME: "game",
 };
 
-export default function Component() {
+const progressScreens = [
+  Screen.CHOOSE_BRIEF,
+  Screen.STAKE,
+  Screen.GAME_EXPLANATION,
+];
+
+const ProgressBar = ({ currentScreen }) => {
+  const currentIndex = progressScreens.indexOf(currentScreen);
+
+  return (
+    <div className="w-full flex justify-center mb-8">
+      {progressScreens.map((screen, index) => (
+        <div
+          key={index}
+          className={`h-1 w-16 mx-1 rounded-full ${
+            index <= currentIndex ? 'bg-blue-500' : 'bg-gray-300'
+          }`}
+        ></div>
+      ))}
+    </div>
+  );
+};
+
+function AppContent() {
   const { sdkHasLoaded, user, setShowAuthFlow } = useDynamicContext();
   const { telegramSignIn } = useTelegramLogin();
   const [isLoading, setIsLoading] = useState(true);
@@ -70,7 +94,7 @@ export default function Component() {
   };
 
   return (
-    <div className="h-screen bg-gray-900 text-white flex flex-col">
+    <div className="h-screen bg-gray-900 text-white flex flex-col font-sans">
       <header className="absolute top-0 left-0 w-full p-4 flex justify-between items-center">
         <div
           className="text-xl font-bold cursor-pointer"
@@ -88,9 +112,18 @@ export default function Component() {
       </header>
 
       <main className="flex-grow flex flex-col items-center justify-center p-4">
+        {progressScreens.includes(currentScreen) && (
+          <ProgressBar currentScreen={currentScreen} />
+        )}
+
         {currentScreen === Screen.WELCOME && (
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-8">Welcome to Silenct Wars</h1>
+            <h1 className="text-3xl font-bold mb-8">Welcome to Silent Wars</h1>
+            <img
+              src="/game-logo.png"
+              alt="Silent Wars Logo"
+              className="w-[300px] h-[300px] mx-auto mb-8"
+            />
             <button
               onClick={handleNextScreen}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full max-w-xs"
@@ -118,23 +151,32 @@ export default function Component() {
               Let's skin into the game
             </h1>
             <p className="mb-4">Choose your faction, Choose your beliefs</p>
-            {["Cyberpunk", "Cyberpunk", "Cyberpunk"].map((faction, index) => (
+            {["Cyberpunk", "Moloch", "Memecoin"].map((faction, index) => (
               <button
                 key={index}
                 onClick={handleNextScreen}
-                className={`w-full py-4 px-6 mb-4 rounded-xl text-left ${index === 0
-                  ? "bg-blue-600"
-                  : index === 1
-                    ? "bg-purple-600"
-                    : "bg-red-600"
+                className={`w-full py-4 px-6 mb-4 rounded-xl text-left ${
+                  index === 0
+                    ? "bg-blue-600"
+                    : index === 1
+                      ? "bg-purple-600"
+                      : "bg-red-600"
                   }`}
               >
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-white rounded-md mr-4"></div>
+                  <img
+                    src={`/${faction.toLowerCase()}-icon.png`}
+                    alt={`${faction} icon`}
+                    className="w-8 h-8 mr-4"
+                  />
                   <div>
                     <div className="font-bold">{faction}</div>
                     <div className="text-sm opacity-80">
-                      "Freedom for all humans"
+                      {index === 0
+                        ? "Freedom for all humans"
+                        : index === 1
+                        ? "Join the allmighty"
+                        : "Huh?"}
                     </div>
                   </div>
                 </div>
@@ -200,5 +242,18 @@ export default function Component() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function Component() {
+  return (
+    <DynamicContextProvider
+      settings={{
+        // 在这里添加Dynamic的配置
+        environmentId: "your-environment-id",
+      }}
+    >
+      <AppContent />
+    </DynamicContextProvider>
   );
 }

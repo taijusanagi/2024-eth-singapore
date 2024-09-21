@@ -28,14 +28,16 @@ export default function RootLayout({
   }
   return (
     <html lang="en">
-      <DynamicContextProvider
-        settings={{
-          environmentId: dynamicEnvId,
-          walletConnectors: [EthereumWalletConnectors, SolanaWalletConnectors],
-        }}
-      >
-        <body className={inter.className}>{children}</body>
-      </DynamicContextProvider>
+      <head>
+        <link
+          rel="preload"
+          href="/@fontsource/londrina-solid/files/londrina-solid-latin-400-normal.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
