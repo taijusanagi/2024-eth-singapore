@@ -66,7 +66,7 @@ export default function HomePage() {
     };
 
     signIn();
-  }, [sdkHasLoaded, user, telegramSignIn]);
+  }, [sdkHasLoaded, user]);
 
   useEffect(() => {
     if (!user && currentScreen !== Screen.WELCOME) {
