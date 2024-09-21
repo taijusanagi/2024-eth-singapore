@@ -3,7 +3,7 @@ import { useDynamicContext } from "../../lib/dynamic";
 import { writeContract } from "viem/actions";
 import { addresses } from "@/contracts/addresses";
 import { GameAbi } from "@/contracts/abi/Game";
-import { baseSepolia } from "viem/chains";
+import { flowTestnet } from "viem/chains";
 const SpawnModal = () => {
   const { primaryWallet } = useDynamicContext() as any;
 
@@ -12,13 +12,11 @@ const SpawnModal = () => {
   const handleSpawn = async (vote: string) => {
     const walletClient = await primaryWallet.getWalletClient();
     const [address] = await walletClient.getAddresses();
-    walletClient.address;
-    walletClient.sendTransaction;
     await writeContract(walletClient, {
       address: addresses.GAME,
       abi: GameAbi,
       functionName: "spawn",
-      chain: baseSepolia,
+      chain: flowTestnet,
       account: address,
     });
   };

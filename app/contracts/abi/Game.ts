@@ -69,6 +69,11 @@ export const GameAbi = [
         name: "y",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "length",
+        type: "uint256",
+      },
     ],
     stateMutability: "view",
     type: "function",
@@ -96,6 +101,11 @@ export const GameAbi = [
       {
         internalType: "uint256",
         name: "y",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "length",
         type: "uint256",
       },
     ],

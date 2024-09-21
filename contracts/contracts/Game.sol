@@ -66,7 +66,8 @@ contract Game {
         (
             uint256 distance,
             uint256 resourceX,
-            uint256 resourceY
+            uint256 resourceY,
+
         ) = getNearestResource(msg.sender);
         require(distance > 0, "No resources available");
 
@@ -87,7 +88,8 @@ contract Game {
         (
             uint256 distance,
             uint256 monsterX,
-            uint256 monsterY
+            uint256 monsterY,
+
         ) = getNearestMonster(msg.sender);
         require(distance > 0, "No monsters available");
 
@@ -198,7 +200,11 @@ contract Game {
     // Get nearest monster to player
     function getNearestMonster(
         address playerAddress
-    ) public view returns (uint256 distance, uint256 x, uint256 y) {
+    )
+        public
+        view
+        returns (uint256 distance, uint256 x, uint256 y, uint256 length)
+    {
         Player memory player = getPlayerByAddress(playerAddress);
         OtherObject[] memory worldMonsters = monsters[worldIndex];
         return _getNearestObject(player.x, player.y, worldMonsters);
@@ -207,7 +213,11 @@ contract Game {
     // Get nearest resource to player
     function getNearestResource(
         address playerAddress
-    ) public view returns (uint256 distance, uint256 x, uint256 y) {
+    )
+        public
+        view
+        returns (uint256 distance, uint256 x, uint256 y, uint256 length)
+    {
         Player memory player = getPlayerByAddress(playerAddress);
         OtherObject[] memory worldResources = resources[worldIndex];
         return _getNearestObject(player.x, player.y, worldResources);
@@ -221,10 +231,15 @@ contract Game {
     )
         internal
         pure
-        returns (uint256 distance, uint256 nearestX, uint256 nearestY)
+        returns (
+            uint256 distance,
+            uint256 nearestX,
+            uint256 nearestY,
+            uint256 length
+        )
     {
         distance = type(uint256).max; // Initialize with max value to find the minimum distance
-
+        length = objects.length;
         for (uint256 i = 0; i < objects.length; i++) {
             uint256 objectX = objects[i].x;
             uint256 objectY = objects[i].y;

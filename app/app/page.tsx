@@ -61,6 +61,19 @@ export default function HomePage() {
   const [enegey, setEnergy] = useState("0");
   const [resource, setResource] = useState("0");
 
+  const [nearestMonster, setNearestMonster] = useState<any>([
+    BigInt(0),
+    BigInt(0),
+    BigInt(0),
+    BigInt(0),
+  ]);
+  const [nearestResource, setNearestResource] = useState<any>([
+    BigInt(0),
+    BigInt(0),
+    BigInt(0),
+    BigInt(0),
+  ]);
+
   useEffect(() => {
     if (!sdkHasLoaded) {
       return;
@@ -88,17 +101,41 @@ export default function HomePage() {
       });
 
       const checkPlayer = async () => {
-        const player = await readContract(publicClient, {
-          address: addresses.GAME,
-          abi: GameAbi,
-          functionName: "getPlayerByAddress",
-          args: [address],
-        });
+        try {
+          const player = await readContract(publicClient, {
+            address: addresses.GAME,
+            abi: GameAbi,
+            functionName: "getPlayerByAddress",
+            args: [address],
+          });
 
-        console.log("player", player);
-        setEnergy(player.energy.toString());
-        setResource(player.resources.toString());
-        setTimeout(checkPlayer, 5000); // Retry every 3 seconds
+          console.log("player", player);
+          setEnergy(player.energy.toString());
+          setResource(player.resources.toString());
+
+          const nearestMonster = await readContract(publicClient, {
+            address: addresses.GAME,
+            abi: GameAbi,
+            functionName: "getNearestMonster",
+            args: [address],
+          });
+          console.log("nearestMonster", nearestMonster);
+          setNearestMonster(nearestMonster);
+
+          const nearestResource = await readContract(publicClient, {
+            address: addresses.GAME,
+            abi: GameAbi,
+            functionName: "getNearestResource",
+            args: [address],
+          });
+
+          console.log("nearestResoure", nearestResource);
+          setNearestResource(nearestResource);
+        } catch (err: any) {
+          console.log("err", err);
+        } finally {
+          setTimeout(checkPlayer, 5000); // Retry every 3 seconds
+        }
       };
 
       // Start checking player
@@ -324,20 +361,24 @@ export default function HomePage() {
             {/* 全局数字屏幕 */}
             <div className="absolute right-2 top-52 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-lg shadow-md border border-gray-200 p-2">
               <div className="flex flex-col space-y-2">
-                <div className="flex items-center justify-end space-x-1">
-                  <span className="text-xl font-bold text-black">789</span>
+                <div className="flex items-center justify-end space-x-2">
+                  <span className="text-xl font-bold text-black">
+                    {nearestMonster[3].toString()}
+                  </span>
                   <span className="text-3xl">👾</span>
                 </div>
-                <div className="flex items-center justify-end space-x-1">
-                  <span className="text-xl font-bold text-black">789</span>
+                <div className="flex items-center justify-end space-x-2">
+                  <span className="text-xl font-bold text-black">
+                    {nearestResource[3].toString()}
+                  </span>
                   <span className="text-3xl">🪙</span>
                 </div>
-                <div className="flex items-center justify-end space-x-1">
-                  <span className="text-xl font-bold text-black">789</span>
+                <div className="flex items-center justify-end space-x-2">
+                  <span className="text-xl font-bold text-black">0</span>
                   <span className="text-3xl">👻</span>
                 </div>
-                <div className="flex items-center justify-end space-x-1">
-                  <span className="text-xl font-bold text-black">789</span>
+                <div className="flex items-center justify-end space-x-2">
+                  <span className="text-xl font-bold text-black">0</span>
                   <span className="text-3xl">😂</span>
                 </div>
               </div>
@@ -366,19 +407,23 @@ export default function HomePage() {
               <div className="flex justify-between">
                 <div className="flex items-center space-x-1">
                   <span className="text-xl">👾</span>
-                  <span className="text-xl text-gray-600">10</span>
+                  <span className="text-xl text-gray-600">
+                    {nearestMonster[0].toString()}
+                  </span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <span className="text-xl">🪙</span>
-                  <span className="text-xl text-gray-600">8</span>
+                  <span className="text-xl text-gray-600">
+                    {nearestResource[0].toString()}
+                  </span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <span className="text-xl">👻</span>
-                  <span className="text-xl text-gray-600">9</span>
+                  <span className="text-xl text-gray-600">0</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <span className="text-xl">😂</span>
-                  <span className="text-xl text-gray-600">11</span>
+                  <span className="text-xl text-gray-600">0</span>
                 </div>
               </div>
             </div>
@@ -390,7 +435,11 @@ export default function HomePage() {
         )}
 
         {isAroundYouDrawerOpen && (
-          <AroundYouDrawer onClose={() => setIsAroundYouDrawerOpen(false)} />
+          <AroundYouDrawer
+            onClose={() => setIsAroundYouDrawerOpen(false)}
+            nearestMonster={nearestMonster}
+            nearestResource={nearestResource}
+          />
         )}
       </main>
     </div>

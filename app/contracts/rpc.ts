@@ -1,1 +1,1 @@
-export const RPC = "https://sepolia.base.org";
+export const RPC = "https://testnet.evm.nodes.onflow.org";
