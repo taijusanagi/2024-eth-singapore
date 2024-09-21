@@ -63,7 +63,6 @@ const PhaserGame = () => {
             frameWidth: 133,  // Width of each frame
             frameHeight: 133  // Height of each frame
         });
-
     }
 
     function preload(this: Phaser.Scene) {
@@ -73,6 +72,8 @@ const PhaserGame = () => {
         this.load.image('bg_far', 'phaser/bg/city/far-buildings.png');
         this.load.image('bg_wall', 'phaser/bg/wall.png');
 
+        this.load.image('pickaxe', 'phaser/pickaxe/1.png');
+
         preload_fx();
 
         this.load.spritesheet('noun1', 'phaser/chars/nouns/1.png', {
@@ -81,19 +82,6 @@ const PhaserGame = () => {
         });
 
         this.load.spritesheet('noun2', 'phaser/chars/nouns/2.png', {
-            frameWidth: 128,  // Replace with your sprite width
-            frameHeight: 128  // Replace with your sprite height
-        });
-
-        this.load.spritesheet('playerRun', 'phaser/chars/1/Run.png', {
-            frameWidth: 128,  // Replace with your sprite width
-            frameHeight: 128  // Replace with your sprite height
-        });
-        this.load.spritesheet('playerFight', 'phaser/chars/1/Attack_2.png', {
-            frameWidth: 128,  // Replace with your sprite width
-            frameHeight: 128  // Replace with your sprite height
-        });
-        this.load.spritesheet('playerFight2', 'phaser/chars/1/Attack_3.png', {
             frameWidth: 128,  // Replace with your sprite width
             frameHeight: 128  // Replace with your sprite height
         });
@@ -114,15 +102,14 @@ const PhaserGame = () => {
         bg_container.setScale(2);
 
         const bg_wall = this.add.tileSprite(0, 560,
-            this.scale.width * 2, 300, 'bg_wall').setOrigin(0, 0);
+            this.scale.width * 2, 1000, 'bg_wall').setOrigin(0, 0);
         bg_wall.setScale(0.5);
 
         create_fx();
 
         const canvasWidth = this.cameras.main.width;
-        const canvasHeight = this.cameras.main.height;
         player_X = canvasWidth / 2;
-        player_Y = canvasHeight / 2 + 90;
+        player_Y = 480;
         player = this.add.sprite(player_X, player_Y, 'noun1');
         player.setScale(1);
 
