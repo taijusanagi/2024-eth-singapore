@@ -11,6 +11,7 @@ import Spinner from "./Spinner";
 import PhaserGame from "./PhaserGame";
 import GlobalStateModal from "./components/GlobalStateModal";
 import AroundYouDrawer from "./components/AroundYouDrawer";
+import TutorialModal from './components/TutorialModal';
 
 const Screen = {
   WELCOME: "welcome",
@@ -51,6 +52,7 @@ function AppContent() {
   const [currentScreen, setCurrentScreen] = useState(Screen.WELCOME);
   const [isGlobalStateModalOpen, setIsGlobalStateModalOpen] = useState(false);
   const [isAroundYouDrawerOpen, setIsAroundYouDrawerOpen] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(true);
 
   useEffect(() => {
     if (!sdkHasLoaded) {
@@ -269,30 +271,30 @@ function AppContent() {
               <PhaserGame />
             </div>
 
-            {/* 全局数字屏幕 */}
-            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-l-lg shadow-md border border-gray-200 p-2">
-              <div className="flex flex-col space-y-2">
-                <div className="flex items-center justify-end space-x-1">
-                  <span className="text-xl font-bold text-black">789</span>
-                  <span className="text-3xl">👾</span>
+            {/* 右侧状态栏 */}
+            <div className="absolute top-4 right-4 bg-white rounded-lg shadow-md border border-gray-200 p-2 z-10">
+              <div className="flex flex-col items-end space-y-2">
+                <div className="flex items-center space-x-2">
+                  <span className="text-2xl">👾</span>
+                  <span className="text-xl">789</span>
                 </div>
-                <div className="flex items-center justify-end space-x-1">
-                  <span className="text-xl font-bold text-black">789</span>
-                  <span className="text-3xl">🪙</span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-2xl">👻</span>
+                  <span className="text-xl">789</span>
                 </div>
-                <div className="flex items-center justify-end space-x-1">
-                  <span className="text-xl font-bold text-black">789</span>
-                  <span className="text-3xl">👻</span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-2xl">🪙</span>
+                  <span className="text-xl">789</span>
                 </div>
-                <div className="flex items-center justify-end space-x-1">
-                  <span className="text-xl font-bold text-black">789</span>
-                  <span className="text-3xl">😂</span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-2xl">😂</span>
+                  <span className="text-xl">789</span>
                 </div>
               </div>
             </div>
 
             {/* 底部状态栏 */}
-            <div className="absolute bottom-20 left-5 right-5 flex justify-between">
+            <div className="absolute bottom-4 left-4 right-4 flex justify-between">
               <div className="bg-white rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
                 <span className="text-3xl">🔋</span>
                 <span className="text-2xl text-gray-600">98/100</span>
@@ -303,9 +305,9 @@ function AppContent() {
               </div>
             </div>
 
-            {/* 周围状态栏 */}
+            {/* Around you 组件 */}
             <div 
-              className="absolute bottom-2 left-3 right-3 bg-white rounded-lg shadow-md border border-gray-200 p-2 cursor-pointer"
+              className="absolute bottom-20 left-4 right-4 bg-white rounded-lg shadow-md border border-gray-200 p-4 cursor-pointer"
               onClick={() => setIsAroundYouDrawerOpen(true)}
             >
               <div className="text-2xl font-bold mb-1 text-black">Around you</div>
@@ -328,6 +330,10 @@ function AppContent() {
                 </div>
               </div>
             </div>
+
+            {showTutorial && (
+              <TutorialModal onClose={() => setShowTutorial(false)} />
+            )}
           </div>
         )}
 
