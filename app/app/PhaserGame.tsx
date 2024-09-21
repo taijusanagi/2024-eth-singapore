@@ -9,19 +9,10 @@ enum GAME_STATES {
 const PhaserGame = () => {
     const gameRef: any = useRef(null); // To keep reference to the game DOM element
     const gameInstanceRef: any = useRef(null); // To store the Phaser game instance
-    let gameState: GAME_STATES = GAME_STATES.IDLE;
-    let player: any;
-    let opponent: any;
-    let attackTween: any;
     let bg_foreground: any;
     let bg_mid: any;
     let bg_far: any;
     let bg_container: any;
-    let player_Y: any;
-    let smoke_sprite: any;
-    let player_X: any;
-
-    let opponent_idle_tween: any;
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -63,40 +54,27 @@ const PhaserGame = () => {
             frameWidth: 133,  // Width of each frame
             frameHeight: 133  // Height of each frame
         });
-
     }
 
     function preload(this: Phaser.Scene) {
+        gameInstanceRef.current.gameState = GAME_STATES.IDLE;
         // Load assets here
         this.load.image('bg_mid', 'phaser/bg/city/1.png');
         this.load.image('bg_foreground', 'phaser/bg/city/foreground.png');
         this.load.image('bg_far', 'phaser/bg/city/far-buildings.png');
         this.load.image('bg_wall', 'phaser/bg/wall.png');
 
+        this.load.image('pickaxe', 'phaser/pickaxe/1.png');
+        this.load.image('coin', 'phaser/resources/coin.png');
+        this.load.image('node', 'phaser/resources/node.png');
+
         preload_fx();
 
-        this.load.spritesheet('noun1', 'phaser/chars/nouns/1.png', {
-            frameWidth: 128,  // Replace with your sprite width
-            frameHeight: 128  // Replace with your sprite height
-        });
-
-        this.load.spritesheet('noun2', 'phaser/chars/nouns/2.png', {
-            frameWidth: 128,  // Replace with your sprite width
-            frameHeight: 128  // Replace with your sprite height
-        });
-
-        this.load.spritesheet('playerRun', 'phaser/chars/1/Run.png', {
-            frameWidth: 128,  // Replace with your sprite width
-            frameHeight: 128  // Replace with your sprite height
-        });
-        this.load.spritesheet('playerFight', 'phaser/chars/1/Attack_2.png', {
-            frameWidth: 128,  // Replace with your sprite width
-            frameHeight: 128  // Replace with your sprite height
-        });
-        this.load.spritesheet('playerFight2', 'phaser/chars/1/Attack_3.png', {
-            frameWidth: 128,  // Replace with your sprite width
-            frameHeight: 128  // Replace with your sprite height
-        });
+        this.load.image('noun1', 'phaser/chars/nouns/1.png');
+        this.load.image('noun2', 'phaser/chars/nouns/2.png');
+        this.load.image('noun3', 'phaser/chars/nouns/3.png');
+        this.load.image('noun4', 'phaser/chars/nouns/4.png');
+        this.load.image('noun5', 'phaser/chars/nouns/5.png');
     };
 
     function create(this: Phaser.Scene) {
@@ -105,68 +83,81 @@ const PhaserGame = () => {
         bg_far = this.add.tileSprite(0, 0, this.scale.width, this.textures.get('bg_far').getSourceImage().height, 'bg_far').setOrigin(0, 0);
         bg_far.setScale(2);
 
-        bg_mid = this.add.tileSprite(0, this.textures.get('bg_mid').getSourceImage().height - 100, this.scale.width, this.textures.get('bg_mid').getSourceImage().height, 'bg_mid').setOrigin(0, 0);
-        bg_foreground = this.add.tileSprite(0, this.textures.get('bg_foreground').getSourceImage().height - 100, this.scale.width, this.textures.get('bg_foreground').getSourceImage().height, 'bg_foreground').setOrigin(0, 0);
+        bg_mid = this.add.tileSprite(0, this.textures.get('bg_mid').getSourceImage().height - 140, this.scale.width, this.textures.get('bg_mid').getSourceImage().height, 'bg_mid').setOrigin(0, 0);
+        bg_foreground = this.add.tileSprite(0, this.textures.get('bg_foreground').getSourceImage().height - 140, this.scale.width, this.textures.get('bg_foreground').getSourceImage().height, 'bg_foreground').setOrigin(0, 0);
 
         bg_container.add(bg_far);
         bg_container.add(bg_mid);
         bg_container.add(bg_foreground);
         bg_container.setScale(2);
 
-        const bg_wall = this.add.tileSprite(0, 560,
-            this.scale.width * 2, 300, 'bg_wall').setOrigin(0, 0);
+        const bg_wall = this.add.tileSprite(0, 480,
+            this.scale.width * 2, 1000, 'bg_wall').setOrigin(0, 0);
         bg_wall.setScale(0.5);
 
         create_fx();
 
-        const canvasWidth = this.cameras.main.width;
-        const canvasHeight = this.cameras.main.height;
-        player_X = canvasWidth / 2;
-        player_Y = canvasHeight / 2 + 90;
-        player = this.add.sprite(player_X, player_Y, 'noun1');
-        player.setScale(1);
+        const resourceNode = this.add.sprite(360, 420, 'node');
+        resourceNode.setScale(0.5);
+        resourceNode.visible = false;
+        gameInstanceRef.current.resourceNode = resourceNode;
 
-        // 创建'run'动画
-        this.anims.create({
-            key: 'run',
-            frames: this.anims.generateFrameNumbers('playerRun', { start: 0, end: 7 }),
-            frameRate: 10,
-            repeat: -1
+        const canvasWidth = this.cameras.main.width;
+        const player_X = canvasWidth / 2;
+        const player_Y = 400;
+        const player = this.add.sprite(player_X, player_Y, 'noun1');
+        player.setScale(1);
+        gameInstanceRef.current.player = player;
+        gameInstanceRef.current.player_X = player_X;
+        gameInstanceRef.current.player_Y = player_Y;
+
+        const opponent = this.add.sprite(canvasWidth / 2 + 150, player_Y + 30, 'noun2');
+        opponent.setOrigin(0.7, 0.7);
+        opponent.flipX = true;
+        opponent.visible = false;
+        gameInstanceRef.current.opponent = opponent;
+        gameInstanceRef.current.opponent_X = canvasWidth / 2 + 150;
+        gameInstanceRef.current.opponent_Y = player_Y + 30;
+
+        const pickaxe = this.add.sprite(player_X + 30, player_Y, 'pickaxe');
+        pickaxe.setScale(1.5);
+        pickaxe.visible = false;
+        pickaxe.setOrigin(0, 1);
+        gameInstanceRef.current.pickaxe = pickaxe;
+
+        gameInstanceRef.current.harvest_tween = this.tweens.add({
+            targets: pickaxe,  // The sprite to animate
+            angle: 360,  // Target y position to "bounce" up to
+            duration: 700,  // Time to reach the target (in ms)
+            ease: 'Sine.easeIn',  // Easing function for smooth motion
+            yoyo: false,  // Return to the original y position
+            repeat: -1,  // Repeat forever
+            onYoyo: () => {
+            },
+            onComplete: () => {
+                console.log('Spin complete');  // Optional: callback when the tween completes
+            }
         });
 
-        opponent = this.add.sprite(canvasWidth / 2 + 150, player_Y, 'noun2');
-        opponent.flipX = true;
 
         // Tween to simulate bouncing or walking up and down
-        this.tweens.add({
+        gameInstanceRef.current.player_idle_tween = this.tweens.add({
             targets: player,  // The sprite to animate
             y: player_Y - 10,  // Target y position to "bounce" up to
             duration: 300,  // Time to reach the target (in ms)
             ease: 'Sine.easeInOut',  // Easing function for smooth motion
             yoyo: true,  // Return to the original y position
             repeat: -1,  // Repeat forever
-            onYoyo: () => {
-                console.log('Going back down');  // Optional: callback when returning to original position
-            },
-            onComplete: () => {
-                console.log('Bounce complete');  // Optional: callback when the tween completes
-            }
         });
 
         // Tween to simulate bouncing or walking up and down
-        opponent_idle_tween = this.tweens.add({
+        gameInstanceRef.current.opponent_idle_tween = this.tweens.add({
             targets: opponent,  // The sprite to animate
             y: player_Y - 10,  // Target y position to "bounce" up to
             duration: 280,  // Time to reach the target (in ms)
             ease: 'Sine.easeInOut',  // Easing function for smooth motion
             yoyo: true,  // Return to the original y position
             repeat: -1,  // Repeat forever
-            onYoyo: () => {
-                console.log('Going back down');  // Optional: callback when returning to original position
-            },
-            onComplete: () => {
-                console.log('Bounce complete');  // Optional: callback when the tween completes
-            }
         });
     }
 
@@ -179,6 +170,43 @@ const PhaserGame = () => {
             repeat: 0  // Play once and stop
         });
 
+    }
+
+    // Function to create and animate a stream of coins flying to a target
+    function launchCoinStream(startX: any, startY: any, targetX: any, targetY: any) {
+        const scene = gameInstanceRef.current.scene.scenes[0];
+
+        const numberOfCoins = 30;  // Number of coins to animate
+        const delayBetweenCoins = 150;  // Delay between each coin animation
+        const coinSprites = [];
+
+        for (let i = 0; i < numberOfCoins; i++) {
+            // Create coin sprite at the start position
+            const coin = scene.add.sprite(startX, startY, 'coin');
+            coin.setScale(0);  // Optional: scale the coin down
+            coinSprites.push(coin);
+
+            // Create a tween for each coin with a delay for each
+            scene.tweens.add({
+                targets: coin,
+                scale: 1,
+                x: targetX,  // Target X position
+                y: targetY,  // Target Y position
+                ease: 'Sine.easeInOut',  // Easing function for smooth flying
+                duration: 1000,  // Time in milliseconds to reach the target
+                delay: i * delayBetweenCoins,  // Delay between each coin
+                onComplete: () => {
+                    // Optional: Destroy the coin after it reaches the target
+                    coin.destroy();
+
+                }
+            });
+        }
+
+        // Set a timeout to change the game state after the coin stream is complete
+        setTimeout(() => {
+            PlayerWalk();
+        }, numberOfCoins * delayBetweenCoins);
     }
 
     function PlayHitFX(x: number, y: number) {
@@ -195,8 +223,19 @@ const PhaserGame = () => {
         hitFXSprite.on('animationcomplete', () => {
             hitFXSprite.destroy();
 
-            Faint(opponent);
+            Faint(gameInstanceRef.current.opponent);
         });
+    }
+
+    function Harvest() {
+        gameInstanceRef.current.gameState = GAME_STATES.HARVESTING;
+        gameInstanceRef.current.opponent.visible = false;
+        gameInstanceRef.current.player_idle_tween.pause();
+        gameInstanceRef.current.pickaxe.visible = true;
+        gameInstanceRef.current.resourceNode.visible = true;
+
+        launchCoinStream(gameInstanceRef.current.player_X + 100, gameInstanceRef.current.player_Y + 80,
+            gameInstanceRef.current.player_X + 200, 100);
     }
 
     function Faint(target: any) {
@@ -212,13 +251,13 @@ const PhaserGame = () => {
             },
             onComplete: () => {
                 console.log('Player is now lying down');
-                opponent_idle_tween.stop();
+                gameInstanceRef.current.opponent_idle_tween.pause();
             }
         });
     }
 
     function update() {
-        if (gameState !== GAME_STATES.IDLE) {
+        if (gameInstanceRef.current.gameState !== GAME_STATES.IDLE) {
             return;
         }
 
@@ -232,27 +271,27 @@ const PhaserGame = () => {
         }
     }
 
-    function RevealOpponent() {
-        opponent.visible = true;
-    }
-
     function PlayAttack() {
         const activeScene = gameInstanceRef.current.scene.scenes[0];
 
-        if (!player) {
-            console.log('Player sprite not found');
-            return;
-        }
+        const player = gameInstanceRef.current.player;
 
-        gameState = GAME_STATES.COMBAT;
+        gameInstanceRef.current.opponent.visible = true;
+        gameInstanceRef.current.gameState = GAME_STATES.COMBAT;
+        gameInstanceRef.current.player_idle_tween.pause();
+        gameInstanceRef.current.pickaxe.visible = false;
+        gameInstanceRef.current.resourceNode.visible = false;
+        gameInstanceRef.current.opponent.x = gameInstanceRef.current.opponent_X;
+        gameInstanceRef.current.opponent.y = gameInstanceRef.current.opponent_Y;
+        gameInstanceRef.current.opponent.angle = 0;
 
         PlayHitFX(player.x, player.y);
 
         // Set the range for left and right movement (adjust the values as needed)
-        const leftMove = player_X - 20;  // Move 50 pixels to the left
-        const rightMove = player_X + 50;  // Move 50 pixels to the right
+        const leftMove = gameInstanceRef.current.player_X - 20;  // Move 50 pixels to the left
+        const rightMove = gameInstanceRef.current.player_X + 50;  // Move 50 pixels to the right
 
-        attackTween = activeScene.tweens.add({
+        activeScene.tweens.add({
             targets: player,  // The sprite to animate
             angle: 15,  // Tilt forward (rotate by 15 degrees)
             x: rightMove,  // Move right first
@@ -284,40 +323,40 @@ const PhaserGame = () => {
         });
     }
 
-
     function PlayerWalk() {
-        if (player && player.anims) {
-            player.anims.play('run');
-        } else {
-            console.error('Player or player animations not initialized');
-        }
+        gameInstanceRef.current.gameState = GAME_STATES.IDLE;
+        gameInstanceRef.current.player_idle_tween.resume();
+        gameInstanceRef.current.pickaxe.visible = false;
+        gameInstanceRef.current.resourceNode.visible = false;
+        gameInstanceRef.current.opponent.visible = false;
     }
 
     function PlayerFight() {
-        if (player) {
-            PlayAttack();
-        } else {
-            console.error('Player not initialized');
-        }
+        PlayAttack();
     }
 
-    function PlayerFight2() {
-        if (player) {
-            PlayAttack();
-        } else {
-            console.error('Player not initialized');
+    // Add an event listener for the 'keydown' event
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'ArrowLeft') {
+            console.log('The "Up Arrow" key was pressed');
+            gameInstanceRef.current.player.setTexture("noun" + (Math.floor(Math.random() * 5) + 1));
         }
-    }
+    });
 
-    function PlayerEquip() {
-        //glasses.setTexture("glasses" + Math.floor(Math.random() * 11 + 1));
-    }
 
     return (
-        <div
-            ref={gameRef}
-            style={{ width: '100%', height: '100%', maxWidth: '640px', margin: 'auto' }} // 调整游戏大小
-        />
+        <>
+            <button id="equipButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
+                onClick={Harvest}>Harvest</button>
+            <button id="runButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
+                onClick={PlayerWalk}>Walk</button>
+            <button id="fightButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
+                onClick={PlayerFight}>Fight</button>
+            <div
+                ref={gameRef}
+                style={{ width: '100%', height: '100vh', maxWidth: '640px', margin: 'auto' }} // Adjust based on your game size
+            />
+        </>
     );
 };
 

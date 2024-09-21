@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   title: "Silent Wars",
   description: "",
 };
-const dynamicEnvId = process.env.NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID;
+const dynamicEnvId = process.env.NEXT_PUBLIC_DYNAMIC_ENV_ID;
 
 export default function RootLayout({
   children,

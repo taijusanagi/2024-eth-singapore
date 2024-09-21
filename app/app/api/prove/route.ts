@@ -12,6 +12,9 @@ import { Keypair, PrivKey } from "maci-domainobjs";
 import { VerifierAbi } from "@/contracts/abi/Verifier";
 import { VkRegistryAbi } from "@/contracts/abi/VkRegistry";
 import { ProofGenerator } from "@/lib/maci/ProofGenerator";
+import { MessageProcessorAbi } from "@/contracts/abi/MessageProcessor";
+import { TallyAbi } from "@/contracts/abi/Tally";
+import { Prover } from "@/lib/maci/Prover";
 
 const DEFAULT_SR_QUEUE_OPS = 4;
 
@@ -43,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     const maciContract = new ethers.Contract(addresses.MACI, MACIAbi, signer);
 
-    const [poll] = await maciContract.polls(id);
+    const [poll, messageProcessor, tally] = await maciContract.polls(id);
 
     const pollContract = new ethers.Contract(poll, PollAbi, signer);
     const vkRegistryContract = new ethers.Contract(
@@ -56,6 +59,12 @@ export async function POST(req: NextRequest) {
       VerifierAbi,
       signer
     );
+    const messageProcessorContract = new ethers.Contract(
+      messageProcessor,
+      MessageProcessorAbi,
+      signer
+    );
+    const tallyContract = new ethers.Contract(tally, TallyAbi, signer);
     const [messageAqAddress, messageAccQueueContractAddress] =
       await pollContract.extContracts();
     const messageAqContract = new ethers.Contract(
@@ -100,11 +109,57 @@ export async function POST(req: NextRequest) {
       options: {},
     });
 
-    console.log("maciState", maciState);
+    const foundPoll = maciState.polls.get(BigInt(id));
 
-    // sync to the game contract...!!
+    if (!foundPoll) {
+      throw new Error(`Poll ${poll} not found`);
+    }
 
-    return NextResponse.json({ message: "Data processed successfully" });
+    const tallyZkey = "./TallyVotesNonQv_10-1-2_test.0.zkey";
+    const tallyWasm = "./TallyVotesNonQv_10-1-2_test.wasm";
+    const processZkey = "./ProcessMessagesNonQv_10-2-1-2_test.0.zkey";
+    const processWasm = "./ProcessMessagesNonQv_10-2-1-2_test.wasm";
+
+    const prover = new Prover({
+      maciContract,
+      messageAqContract,
+      mpContract: messageProcessorContract,
+      pollContract,
+      vkRegistryContract,
+      verifierContract,
+      tallyContract,
+    });
+
+    const proofGenerator = new ProofGenerator({
+      poll: foundPoll,
+      maciContractAddress: addresses.MACI,
+      tallyContractAddress: tally,
+      rapidsnark: undefined,
+      tally: {
+        zkey: tallyZkey,
+        witgen: undefined,
+        wasm: tallyWasm,
+      },
+      mp: {
+        zkey: processZkey,
+        witgen: undefined,
+        wasm: processWasm,
+      },
+      outputDir: "",
+      tallyOutputFile: "",
+      useQuadraticVoting: false,
+    });
+    const pricessProofs = await proofGenerator.generateMpProofs();
+    await prover.proveMessageProcessing(pricessProofs);
+
+    const takllyResult = await proofGenerator.generateTallyProofs({
+      name: "hardhat",
+      config: { chainId: 31337 },
+    });
+
+    await prover.proveTally(takllyResult.proofs);
+
+    return NextResponse.json({ tallyData: takllyResult.tallyData });
   } catch (error) {
     console.log("error", error);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
