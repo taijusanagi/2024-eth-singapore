@@ -6,8 +6,11 @@ const PhaserGame = () => {
     let player: any;
     let glasses: any;
     let attackTween: any;
-    let background1: any;
-    let background2: any;
+    let bg_foreground: any;
+    let bg_mid: any;
+    let bg_far: any;
+    let bg_container: any;
+    let player_Y: any;
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -45,8 +48,14 @@ const PhaserGame = () => {
 
     function preload(this: Phaser.Scene) {
         // Load assets here
-        this.load.image('bg_main', 'phaser/bg/city/1.png');
+        this.load.image('bg_mid', 'phaser/bg/city/1.png');
         this.load.image('bg_foreground', 'phaser/bg/city/foreground.png');
+        this.load.image('bg_far', 'phaser/bg/city/far-buildings.png');
+
+        this.load.spritesheet('hitEffect', 'phaser/fx/hit.png', {
+            frameWidth: 133,  // Width of each frame
+            frameHeight: 133  // Height of each frame
+        });
 
         this.load.image('glasses1', 'phaser/nouns/1.png');
         this.load.image('glasses2', 'phaser/nouns/2.png');
@@ -79,29 +88,36 @@ const PhaserGame = () => {
     };
 
     function create(this: Phaser.Scene) {
-        background1 = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'bg_main').setOrigin(0, 0);
-        background2 = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'bg_foreground').setOrigin(0, 0);
+        bg_container = this.add.container();
 
-        var bg_layer = this.add.container();
-        bg_layer.add(this.add.image(0, 0, 'bg_main').setOrigin(0, 0));
+        bg_far = this.add.tileSprite(0, 0, this.scale.width, this.textures.get('bg_far').getSourceImage().height, 'bg_far').setOrigin(0, 0);
+        bg_far.setScale(2);
+
+        bg_mid = this.add.tileSprite(0, this.textures.get('bg_mid').getSourceImage().height - 100, this.scale.width, this.textures.get('bg_mid').getSourceImage().height, 'bg_mid').setOrigin(0, 0);
+        bg_foreground = this.add.tileSprite(0, this.textures.get('bg_foreground').getSourceImage().height - 100, this.scale.width, this.textures.get('bg_foreground').getSourceImage().height, 'bg_foreground').setOrigin(0, 0);
+
+        bg_container.add(bg_far);
+        bg_container.add(bg_mid);
+        bg_container.add(bg_foreground);
+        bg_container.setScale(2);
+
+        this.anims.create({
+            key: 'hitFX',  // Name of the animation
+            frames: this.anims.generateFrameNumbers('hitEffect', { start: 0, end: 9 }),  // Use frames 0 to 9
+            frameRate: 30,  // Speed of the animation
+            repeat: 0  // Play once and stop
+        });
 
         const canvasWidth = this.cameras.main.width;
         const canvasHeight = this.cameras.main.height;
-        player = this.add.sprite(canvasWidth / 2, canvasHeight / 4, 'noun1');
+        player_Y = canvasHeight / 2 + 90;
+        player = this.add.sprite(canvasWidth / 2, player_Y, 'noun1');
         player.setScale(1);
-
-        // Listen for the 'animationcomplete' event to switch back to walk after fight animation ends
-        /*player.on('animationcomplete', (animation: { key: string; }) => {
-            if (animation.key === 'fight' || animation.key === 'fight2') {
-                player.anims.play('walk'); // Switch back to walk animation
-                glasses.setVisible(true);
-            }
-        });*/
 
         // Tween to simulate bouncing or walking up and down
         this.tweens.add({
             targets: player,  // The sprite to animate
-            y: canvasHeight / 4 - 10,  // Target y position to "bounce" up to
+            y: player_Y - 10,  // Target y position to "bounce" up to
             duration: 300,  // Time to reach the target (in ms)
             ease: 'Sine.easeInOut',  // Easing function for smooth motion
             yoyo: true,  // Return to the original y position
@@ -115,18 +131,36 @@ const PhaserGame = () => {
         });
     }
 
+    function PlayHitFX(x: number, y: number) {
+        const activeScene = gameInstanceRef.current.scene.scenes[0];
+
+        // Create a sprite for the hit effect at the given (x, y) coordinates
+        const hitFXSprite = activeScene.add.sprite(x, y, 'hitEffect');
+        hitFXSprite.setScale(3);
+
+        // Play the 'hitFX' animation on this sprite
+        hitFXSprite.play('hitFX');
+
+        // Once the animation is completed, destroy the sprite
+        hitFXSprite.on('animationcomplete', () => {
+            hitFXSprite.destroy();
+        });
+    }
+
     function update() {
         // Scroll the background by updating the tile position
-        if (background1) {
-            background1.tilePositionX += 1;  // Move background to the left for scrolling effect
+        if (bg_mid) {
+            bg_mid.tilePositionX += 0.2;  // Move background to the left for scrolling effect
         }
-        if (background2) {
-            background2.tilePositionX += 2;  // Move background to the left for scrolling effect
+        if (bg_foreground) {
+            bg_foreground.tilePositionX += 0.5;  // Move background to the left for scrolling effect
         }
     }
 
     function PlayAttack() {
         const activeScene = gameInstanceRef.current.scene.scenes[0];
+
+        PlayHitFX(player.x, player.y);
 
         // Set the range for left and right movement (adjust the values as needed)
         const initialX = player.x;
@@ -165,7 +199,7 @@ const PhaserGame = () => {
     }
 
 
-    function PlayerRun() {
+    function PlayerWalk() {
         player.anims.play('run');
     }
 
@@ -183,9 +217,9 @@ const PhaserGame = () => {
     return (
         <>
             <button id="equipButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
-                onClick={PlayerEquip}>Equip</button>
+                onClick={PlayerEquip}>Harvest</button>
             <button id="runButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
-                onClick={PlayerRun}>Run</button>
+                onClick={PlayerWalk}>Walk</button>
             <button id="fightButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
                 onClick={PlayerFight}>Fight</button>
             <button id="fightButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
