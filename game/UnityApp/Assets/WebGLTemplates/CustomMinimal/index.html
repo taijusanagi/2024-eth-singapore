@@ -12,6 +12,8 @@
     style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
   <script src="Build/{{{ LOADER_FILENAME }}}"></script>
   <script>
+    let unityInstance = null;
+
     // Function to send messages from Unity (C#) to the parent iframe
     function SendMessageToParent(message) {
       window.parent.postMessage(message, "*"); // Send the message to the parent iframe
@@ -39,6 +41,19 @@
 
       document.body.style.textAlign = "left";
     }
+
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+        progressBarFull.style.width = 100 * progress + "%";
+      }).then((instance) => {
+        unityInstance = instance; // Store the instance globally
+        loadingBar.style.display = "none";
+        onUnityLoaded();
+      }).catch((message) => {
+        alert(message);
+      });
+      windowResizeEvent();
+    };
 
     createUnityInstance(document.querySelector("#unity-canvas"), {
       dataUrl: "Build/{{{ DATA_FILENAME }}}",
