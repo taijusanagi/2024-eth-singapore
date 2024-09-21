@@ -90,7 +90,7 @@ export default function Component() {
       <main className="flex-grow flex flex-col items-center justify-center p-4">
         {currentScreen === Screen.WELCOME && (
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-8">Welcome to Silence Wars</h1>
+            <h1 className="text-3xl font-bold mb-8">Welcome to Silenct Wars</h1>
             <button
               onClick={handleNextScreen}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full max-w-xs"
@@ -123,10 +123,10 @@ export default function Component() {
                 key={index}
                 onClick={handleNextScreen}
                 className={`w-full py-4 px-6 mb-4 rounded-xl text-left ${index === 0
-                    ? "bg-blue-600"
-                    : index === 1
-                      ? "bg-purple-600"
-                      : "bg-red-600"
+                  ? "bg-blue-600"
+                  : index === 1
+                    ? "bg-purple-600"
+                    : "bg-red-600"
                   }`}
               >
                 <div className="flex items-center">

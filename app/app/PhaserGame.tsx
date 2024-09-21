@@ -21,6 +21,8 @@ const PhaserGame = () => {
     let smoke_sprite: any;
     let player_X: any;
 
+    let opponent_idle_tween: any;
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             // Dynamically import Phaser to avoid "navigator is not defined" errors during SSR
@@ -144,7 +146,7 @@ const PhaserGame = () => {
         });
 
         // Tween to simulate bouncing or walking up and down
-        this.tweens.add({
+        opponent_idle_tween = this.tweens.add({
             targets: opponent,  // The sprite to animate
             y: player_Y - 10,  // Target y position to "bounce" up to
             duration: 280,  // Time to reach the target (in ms)
@@ -175,7 +177,7 @@ const PhaserGame = () => {
         const activeScene = gameInstanceRef.current.scene.scenes[0];
 
         // Create a sprite for the hit effect at the given (x, y) coordinates
-        const hitFXSprite = activeScene.add.sprite(x, y, 'hitEffect');
+        const hitFXSprite = activeScene.add.sprite(x + 50, y, 'hitEffect');
         hitFXSprite.setScale(3);
 
         // Play the 'hitFX' animation on this sprite
@@ -184,6 +186,26 @@ const PhaserGame = () => {
         // Once the animation is completed, destroy the sprite
         hitFXSprite.on('animationcomplete', () => {
             hitFXSprite.destroy();
+
+            Faint(opponent);
+        });
+    }
+
+    function Faint(target: any) {
+        const activeScene = gameInstanceRef.current.scene.scenes[0];
+        activeScene.tweens.add({
+            targets: target,
+            angle: 90, // Rotate the player 90 degrees backward (lying horizontally)
+            y: target.y + 50, // Move the player down by 50 pixels
+            duration: 1000, // Duration of the tween (1 second)
+            ease: 'Power2', // Easing for a smooth effect
+            onStart: () => {
+                console.log('Player is falling backward');
+            },
+            onComplete: () => {
+                console.log('Player is now lying down');
+                opponent_idle_tween.stop();
+            }
         });
     }
 
