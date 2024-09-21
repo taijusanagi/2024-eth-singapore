@@ -11,6 +11,12 @@ import PhaserGame from "./PhaserGame";
 import GlobalStateModal from "./components/GlobalStateModal";
 import AroundYouDrawer from "./components/AroundYouDrawer";
 
+import { Address, createPublicClient, http } from "viem";
+import { RPC } from "@/contracts/rpc";
+import { readContract } from "viem/actions";
+import { addresses } from "@/contracts/addresses";
+import { GameAbi } from "@/contracts/abi/Game";
+
 const Screen = {
   WELCOME: "welcome",
   CONNECT_WALLET: "connectWallet",
@@ -44,12 +50,16 @@ const ProgressBar = ({ currentScreen }: { currentScreen: string }) => {
 };
 
 export default function HomePage() {
-  const { sdkHasLoaded, user, setShowAuthFlow } = useDynamicContext();
+  const { sdkHasLoaded, user, setShowAuthFlow, primaryWallet } =
+    useDynamicContext();
   const { telegramSignIn } = useTelegramLogin();
   const [isLoading, setIsLoading] = useState(true);
   const [currentScreen, setCurrentScreen] = useState(Screen.WELCOME);
   const [isGlobalStateModalOpen, setIsGlobalStateModalOpen] = useState(false);
   const [isAroundYouDrawerOpen, setIsAroundYouDrawerOpen] = useState(false);
+
+  const [enegey, setEnergy] = useState("0");
+  const [resource, setResource] = useState("0");
 
   useEffect(() => {
     if (!sdkHasLoaded) {
@@ -65,6 +75,38 @@ export default function HomePage() {
 
     signIn();
   }, [sdkHasLoaded, user]);
+
+  useEffect(() => {
+    if (!primaryWallet) {
+      return;
+    }
+    const process = async () => {
+      const address = primaryWallet.address as Address;
+
+      const publicClient = createPublicClient({
+        transport: http(RPC),
+      });
+
+      const checkPlayer = async () => {
+        const player = await readContract(publicClient, {
+          address: addresses.GAME,
+          abi: GameAbi,
+          functionName: "getPlayerByAddress",
+          args: [address],
+        });
+
+        console.log("player", player);
+        setEnergy(player.energy.toString());
+        setResource(player.resources.toString());
+        setTimeout(checkPlayer, 5000); // Retry every 3 seconds
+      };
+
+      // Start checking player
+      checkPlayer();
+    };
+
+    process();
+  }, [primaryWallet]);
 
   useEffect(() => {
     if (!user && currentScreen !== Screen.WELCOME) {
@@ -305,11 +347,11 @@ export default function HomePage() {
             <div className="absolute bottom-24 left-2 right-2 flex justify-between">
               <div className="bg-white bg-opacity-70 rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
                 <span className="text-3xl">🔋</span>
-                <span className="text-2xl text-gray-600">98/100</span>
+                <span className="text-2xl text-gray-600">{enegey}/100</span>
               </div>
               <div className="bg-white bg-opacity-70 rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
                 <span className="text-3xl">💰</span>
-                <span className="text-2xl text-gray-600">1,234</span>
+                <span className="text-2xl text-gray-600">{resource}</span>
               </div>
             </div>
 

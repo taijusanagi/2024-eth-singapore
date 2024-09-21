@@ -6,6 +6,7 @@ import { readContract } from "viem/actions";
 import { useDynamicContext } from "../lib/dynamic";
 
 import SpawnModal from "../app/components/SpawnModal";
+import { RPC } from "@/contracts/rpc";
 
 enum GAME_STATES {
   NONE = "none",
@@ -68,7 +69,7 @@ const PhaserGame = () => {
       const address = primaryWallet.address as Address;
 
       const publicClient = createPublicClient({
-        transport: http("https://sepolia.base.org"),
+        transport: http(RPC),
       });
 
       const worldIndex = await readContract(publicClient, {
@@ -87,8 +88,12 @@ const PhaserGame = () => {
 
         // Check if playerIndex is greater than 0
         if (playerIndex > BigInt(0)) {
-          gameInstanceRef.current.gameState = GAME_STATES.IDLE;
-          gameInstanceRef.current.player.visible = true;
+          if (!gameInstanceRef.current || !gameInstanceRef.current.player) {
+            setTimeout(checkPlayerIndex, 3000); // Retry every 3 seconds
+          } else {
+            gameInstanceRef.current.gameState = GAME_STATES.IDLE;
+            gameInstanceRef.current.player.visible = true;
+          }
           setIsSpawnModalOpen(false);
         } else {
           setIsSpawnModalOpen(true);
