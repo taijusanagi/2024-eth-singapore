@@ -22,6 +22,7 @@
     "eslint-config-next": "13.4.19",
     "ethers": "^6.13.2",
     "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.445.0",
     "maci-circuits": "^2.3.0",
     "maci-core": "^2.2.0",
     "maci-crypto": "^2.2.0",
