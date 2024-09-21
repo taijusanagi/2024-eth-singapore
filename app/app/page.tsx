@@ -5,9 +5,12 @@ import {
   DynamicWidget,
   useTelegramLogin,
   useDynamicContext,
+  DynamicContextProvider
 } from "../lib/dynamic";
 import Spinner from "./Spinner";
 import PhaserGame from "./PhaserGame";
+import GlobalStateModal from "./components/GlobalStateModal";
+import AroundYouDrawer from "./components/AroundYouDrawer";
 
 const Screen = {
   WELCOME: "welcome",
@@ -18,11 +21,35 @@ const Screen = {
   GAME: "game",
 };
 
-export default function Component() {
+const progressScreens = [
+  Screen.CHOOSE_BRIEF,
+  Screen.STAKE,
+  Screen.GAME_EXPLANATION,
+];
+
+const ProgressBar = ({ currentScreen }: { currentScreen: string }) => {
+  const currentIndex = progressScreens.indexOf(currentScreen);
+
+  return (
+    <div className="w-full flex justify-center mb-8">
+      {progressScreens.map((screen, index) => (
+        <div
+          key={index}
+          className={`h-1 w-16 mx-1 rounded-full ${index <= currentIndex ? 'bg-blue-500' : 'bg-gray-300'
+            }`}
+        ></div>
+      ))}
+    </div>
+  );
+};
+
+function AppContent() {
   const { sdkHasLoaded, user, setShowAuthFlow } = useDynamicContext();
   const { telegramSignIn } = useTelegramLogin();
   const [isLoading, setIsLoading] = useState(true);
   const [currentScreen, setCurrentScreen] = useState(Screen.WELCOME);
+  const [isGlobalStateModalOpen, setIsGlobalStateModalOpen] = useState(false);
+  const [isAroundYouDrawerOpen, setIsAroundYouDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (!sdkHasLoaded) {
@@ -70,7 +97,7 @@ export default function Component() {
   };
 
   return (
-    <div className="h-screen bg-gray-900 text-white flex flex-col">
+    <div className="h-screen bg-gray-900 text-white flex flex-col font-sans">
       <header className="absolute top-0 left-0 w-full p-4 flex justify-between items-center">
         <div
           className="text-xl font-bold cursor-pointer"
@@ -88,9 +115,18 @@ export default function Component() {
       </header>
 
       <main className="flex-grow flex flex-col items-center justify-center p-4">
+        {progressScreens.includes(currentScreen) && (
+          <ProgressBar currentScreen={currentScreen} />
+        )}
+
         {currentScreen === Screen.WELCOME && (
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-8">Welcome to Silenct Wars</h1>
+            <h1 className="text-3xl font-bold mb-8">Welcome to Silent Wars</h1>
+            <img
+              src="/game-logo.png"
+              alt="Silent Wars Logo"
+              className="w-[300px] h-[300px] mx-auto mb-8"
+            />
             <button
               onClick={handleNextScreen}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full max-w-xs"
@@ -118,7 +154,7 @@ export default function Component() {
               Let's skin into the game
             </h1>
             <p className="mb-4">Choose your faction, Choose your beliefs</p>
-            {["Cyberpunk", "Cyberpunk", "Cyberpunk"].map((faction, index) => (
+            {["Cyberpunk", "Moloch", "Memecoin"].map((faction, index) => (
               <button
                 key={index}
                 onClick={handleNextScreen}
@@ -130,11 +166,19 @@ export default function Component() {
                   }`}
               >
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-white rounded-md mr-4"></div>
+                  <img
+                    src={`/icons/${faction.toLowerCase()}-icon.png`}
+                    alt={`${faction} icon`}
+                    className="w-8 h-8 mr-4"
+                  />
                   <div>
                     <div className="font-bold">{faction}</div>
                     <div className="text-sm opacity-80">
-                      "Freedom for all humans"
+                      {index === 0
+                        ? "Freedom for all humans"
+                        : index === 1
+                          ? "Join the allmighty"
+                          : "Huh?"}
                     </div>
                   </div>
                 </div>
@@ -171,17 +215,30 @@ export default function Component() {
           <div className="text-center w-full max-w-md">
             <h1 className="text-2xl font-bold mb-6">Game</h1>
             <p className="mb-4">Farm, Battle, Govern</p>
-            {["Farm", "Battle", "Govern"].map((action, index) => (
-              <div key={index} className="mb-4 text-left">
-                <h2 className="font-bold flex items-center mb-2">
-                  <span className="w-6 h-6 bg-gray-700 rounded-full mr-2"></span>
-                  {action}
-                </h2>
-                <p className="text-sm opacity-80">
-                  Game rules description goes here
-                </p>
-              </div>
-            ))}
+            <div className="mb-4 text-left">
+              <h2 className="font-bold flex items-center mb-2">
+                <span className="mr-2">🧺</span> Farm
+              </h2>
+              <p className="text-sm opacity-80">
+                Collect resources for your guild
+              </p>
+            </div>
+            <div className="mb-4 text-left">
+              <h2 className="font-bold flex items-center mb-2">
+                <span className="mr-2">⚔️</span> Battle
+              </h2>
+              <p className="text-sm opacity-80">
+                "Interact" with opponents to collect their resources
+              </p>
+            </div>
+            <div className="mb-4 text-left">
+              <h2 className="font-bold flex items-center mb-2">
+                <span className="mr-2">🧠</span> Govern
+              </h2>
+              <p className="text-sm opacity-80">
+                Charter the world's path with your guild members, or alone.
+              </p>
+            </div>
             <button
               onClick={handleNextScreen}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full mt-4"
@@ -192,13 +249,106 @@ export default function Component() {
         )}
 
         {currentScreen === Screen.GAME && (
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-6">Game Screen</h1>
-            <p>Game interaction components go here</p>
-            <PhaserGame />
+          <div className="relative w-full h-full max-w-md mx-auto">
+            {/* Global State 组件 */}
+            <div
+              className="absolute top-4 left-4 right-4 bg-white rounded-lg shadow-md border border-gray-200 p-4 cursor-pointer z-10"
+              onClick={() => setIsGlobalStateModalOpen(true)}
+            >
+              <div className="text-xl font-bold mb-2 text-black">Global State</div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xl">👾</span>
+                <span className="text-lg text-gray-600">+10 Res</span>
+              </div>
+            </div>
+
+            {/* 游戏主屏幕 */}
+            <div className="absolute top-5 left-5 right-5 bottom-5 bg-gray-200 rounded-lg overflow-hidden">
+              <PhaserGame />
+            </div>
+
+            {/* 全局数字屏幕 */}
+            <div className="absolute right-0 top-1/3 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-l-lg shadow-md border border-gray-200 p-2">
+              <div className="flex flex-col space-y-2">
+                <div className="flex items-center justify-end space-x-1">
+                  <span className="text-xl font-bold text-black">789</span>
+                  <span className="text-3xl">👾</span>
+                </div>
+                <div className="flex items-center justify-end space-x-1">
+                  <span className="text-xl font-bold text-black">789</span>
+                  <span className="text-3xl">🪙</span>
+                </div>
+                <div className="flex items-center justify-end space-x-1">
+                  <span className="text-xl font-bold text-black">789</span>
+                  <span className="text-3xl">👻</span>
+                </div>
+                <div className="flex items-center justify-end space-x-1">
+                  <span className="text-xl font-bold text-black">789</span>
+                  <span className="text-3xl">😂</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 底部状态栏 */}
+            <div className="absolute bottom-20 left-5 right-5 flex justify-between">
+              <div className="bg-white bg-opacity-70 rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
+                <span className="text-3xl">🔋</span>
+                <span className="text-2xl text-gray-600">98/100</span>
+              </div>
+              <div className="bg-white bg-opacity-70 rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
+                <span className="text-3xl">💰</span>
+                <span className="text-2xl text-gray-600">1,234</span>
+              </div>
+            </div>
+
+            {/* 周围状态栏 */}
+            <div
+              className="absolute bottom-2 left-3 right-3 bg-white rounded-lg shadow-md border border-gray-200 p-2 cursor-pointer"
+              onClick={() => setIsAroundYouDrawerOpen(true)}
+            >
+              <div className="text-2xl font-bold mb-1 text-black">Around you</div>
+              <div className="flex justify-between">
+                <div className="flex items-center space-x-1">
+                  <span className="text-xl">👾</span>
+                  <span className="text-xl text-gray-600">10</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <span className="text-xl">🪙</span>
+                  <span className="text-xl text-gray-600">8</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <span className="text-xl">👻</span>
+                  <span className="text-xl text-gray-600">9</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <span className="text-xl">😂</span>
+                  <span className="text-xl text-gray-600">11</span>
+                </div>
+              </div>
+            </div>
           </div>
+        )}
+
+        {isGlobalStateModalOpen && (
+          <GlobalStateModal onClose={() => setIsGlobalStateModalOpen(false)} />
+        )}
+
+        {isAroundYouDrawerOpen && (
+          <AroundYouDrawer onClose={() => setIsAroundYouDrawerOpen(false)} />
         )}
       </main>
     </div>
+  );
+}
+
+export default function Component() {
+  return (
+    <DynamicContextProvider
+      settings={{
+        environmentId: process.env.NEXT_PUBLIC_DYNAMIC_ENV_ID || "defaultEnvironmentId",
+      }}
+    >
+      <AppContent />
+    </DynamicContextProvider>
   );
 }
