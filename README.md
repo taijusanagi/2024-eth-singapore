@@ -6,7 +6,7 @@
 
 ## Why Silent Wars?
 
-1. **Censorship Resistance**: In the current crypto landscape, censorship resistance is crucial. The game is inspired by the challenges faced by Bitcoin and Ethereum, providing players with a deep understanding of the importance of maintaining a censorship-resistant environment.
+1. **Censorship Resistance**: In the current crypto landscape, censorship resistance is crucial. The game is inspired by the challenges faced by crypto coins like Bitcoin and Ethereum, providing players with a deep understanding of the importance of maintaining a censorship-resistant environment.
 
 2. **Learning On-Chain Governance**: The game offers players an opportunity to learn and experience on-chain governance firsthand. By participating in the governance process, players can better understand how DAOs and communities operate in the real world, effectively reducing the cost of user education.
 
