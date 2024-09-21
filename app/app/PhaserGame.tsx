@@ -9,19 +9,12 @@ enum GAME_STATES {
 const PhaserGame = () => {
     const gameRef: any = useRef(null); // To keep reference to the game DOM element
     const gameInstanceRef: any = useRef(null); // To store the Phaser game instance
-    let gameState: GAME_STATES = GAME_STATES.IDLE;
-    let player: any;
-    let opponent: any;
-    let attackTween: any;
     let bg_foreground: any;
     let bg_mid: any;
     let bg_far: any;
     let bg_container: any;
     let player_Y: any;
-    let smoke_sprite: any;
     let player_X: any;
-
-    let opponent_idle_tween: any;
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -66,6 +59,7 @@ const PhaserGame = () => {
     }
 
     function preload(this: Phaser.Scene) {
+        gameInstanceRef.current.gameState = GAME_STATES.IDLE;
         // Load assets here
         this.load.image('bg_mid', 'phaser/bg/city/1.png');
         this.load.image('bg_foreground', 'phaser/bg/city/foreground.png');
@@ -110,14 +104,37 @@ const PhaserGame = () => {
         const canvasWidth = this.cameras.main.width;
         player_X = canvasWidth / 2;
         player_Y = 480;
-        player = this.add.sprite(player_X, player_Y, 'noun1');
+        const player = this.add.sprite(player_X, player_Y, 'noun1');
         player.setScale(1);
+        gameInstanceRef.current.player = player;
 
-        opponent = this.add.sprite(canvasWidth / 2 + 150, player_Y, 'noun2');
+        const opponent = this.add.sprite(canvasWidth / 2 + 150, player_Y, 'noun2');
         opponent.flipX = true;
+        gameInstanceRef.current.opponent = opponent;
+
+        const pickaxe = this.add.sprite(player_X + 30, player_Y, 'pickaxe');
+        pickaxe.setScale(1.5);
+        pickaxe.visible = false;
+        pickaxe.setOrigin(0, 1);
+        gameInstanceRef.current.pickaxe = pickaxe;
+
+        gameInstanceRef.current.harvest_tween = this.tweens.add({
+            targets: pickaxe,  // The sprite to animate
+            angle: 360,  // Target y position to "bounce" up to
+            duration: 700,  // Time to reach the target (in ms)
+            ease: 'Sine.easeIn',  // Easing function for smooth motion
+            yoyo: false,  // Return to the original y position
+            repeat: -1,  // Repeat forever
+            onYoyo: () => {
+            },
+            onComplete: () => {
+                console.log('Spin complete');  // Optional: callback when the tween completes
+            }
+        });
+
 
         // Tween to simulate bouncing or walking up and down
-        this.tweens.add({
+        gameInstanceRef.current.player_idle_tween = this.tweens.add({
             targets: player,  // The sprite to animate
             y: player_Y - 10,  // Target y position to "bounce" up to
             duration: 300,  // Time to reach the target (in ms)
@@ -133,7 +150,7 @@ const PhaserGame = () => {
         });
 
         // Tween to simulate bouncing or walking up and down
-        opponent_idle_tween = this.tweens.add({
+        gameInstanceRef.current.opponent_idle_tween = this.tweens.add({
             targets: opponent,  // The sprite to animate
             y: player_Y - 10,  // Target y position to "bounce" up to
             duration: 280,  // Time to reach the target (in ms)
@@ -174,8 +191,15 @@ const PhaserGame = () => {
         hitFXSprite.on('animationcomplete', () => {
             hitFXSprite.destroy();
 
-            Faint(opponent);
+            Faint(gameInstanceRef.current.opponent);
         });
+    }
+
+    function Harvest() {
+        gameInstanceRef.current.gameState = GAME_STATES.HARVESTING;
+        gameInstanceRef.current.opponent.visible = false;
+        gameInstanceRef.current.player_idle_tween.pause();
+        gameInstanceRef.current.pickaxe.visible = true;
     }
 
     function Faint(target: any) {
@@ -191,13 +215,13 @@ const PhaserGame = () => {
             },
             onComplete: () => {
                 console.log('Player is now lying down');
-                opponent_idle_tween.stop();
+                gameInstanceRef.current.opponent_idle_tween.pause();
             }
         });
     }
 
     function update() {
-        if (gameState !== GAME_STATES.IDLE) {
+        if (gameInstanceRef.current.gameState !== GAME_STATES.IDLE) {
             return;
         }
 
@@ -211,19 +235,15 @@ const PhaserGame = () => {
         }
     }
 
-    function RevealOpponent() {
-        opponent.visible = true;
-    }
-
     function PlayAttack() {
         const activeScene = gameInstanceRef.current.scene.scenes[0];
 
-        if (!player) {
-            console.log('Player sprite not found');
-            return;
-        }
+        const player = gameInstanceRef.current.player;
 
-        gameState = GAME_STATES.COMBAT;
+        gameInstanceRef.current.opponent.visible = true;
+        gameInstanceRef.current.gameState = GAME_STATES.COMBAT;
+        gameInstanceRef.current.player_idle_tween.pause();
+        gameInstanceRef.current.pickaxe.visible = false;
 
         PlayHitFX(player.x, player.y);
 
@@ -231,7 +251,7 @@ const PhaserGame = () => {
         const leftMove = player_X - 20;  // Move 50 pixels to the left
         const rightMove = player_X + 50;  // Move 50 pixels to the right
 
-        attackTween = activeScene.tweens.add({
+        activeScene.tweens.add({
             targets: player,  // The sprite to animate
             angle: 15,  // Tilt forward (rotate by 15 degrees)
             x: rightMove,  // Move right first
@@ -263,32 +283,24 @@ const PhaserGame = () => {
         });
     }
 
-
     function PlayerWalk() {
-        player.anims.play('run');
+        gameInstanceRef.current.gameState = GAME_STATES.IDLE;
+        gameInstanceRef.current.player_idle_tween.resume();
+        gameInstanceRef.current.pickaxe.visible = false;
     }
 
     function PlayerFight() {
         PlayAttack();
     }
-    function PlayerFight2() {
-        PlayAttack();
-    }
-
-    function PlayerEquip() {
-        //glasses.setTexture("glasses" + Math.floor(Math.random() * 11 + 1));
-    }
 
     return (
         <>
             <button id="equipButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
-                onClick={PlayerEquip}>Harvest</button>
+                onClick={Harvest}>Harvest</button>
             <button id="runButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
                 onClick={PlayerWalk}>Walk</button>
             <button id="fightButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
                 onClick={PlayerFight}>Fight</button>
-            <button id="fightButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
-                onClick={PlayerFight2}>Shoot</button>
             <div
                 ref={gameRef}
                 style={{ width: '100%', height: '100vh', maxWidth: '640px', margin: 'auto' }} // Adjust based on your game size
