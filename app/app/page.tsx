@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DynamicWidget,
   useTelegramLogin,
   useDynamicContext,
 } from "../lib/dynamic";
-import Spinner from "./Spinner";
 
-// Enum for managing different screens
 const Screen = {
   WELCOME: "welcome",
   ACCESS_WALLET: "accessWallet",
@@ -22,7 +20,6 @@ export default function Component() {
   const { user } = useDynamicContext();
 
   const { telegramSignIn } = useTelegramLogin();
-  const [isLoading, setIsLoading] = useState(false);
   const [currentScreen, setCurrentScreen] = useState(Screen.WELCOME);
 
   const handleNextScreen = () => {
@@ -39,15 +36,18 @@ export default function Component() {
     setCurrentScreen(nextScreen);
   };
 
-  // Move the sign-in logic into handleConnect
   const handleConnect = async () => {
-    setIsLoading(true);
     if (!user) {
       await telegramSignIn({ forceCreateUser: true });
     }
-    setIsLoading(false);
-    setCurrentScreen(Screen.CHOOSE_BRIEF);
   };
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    setCurrentScreen(Screen.CHOOSE_BRIEF);
+  }, [user]);
 
   return (
     <div className="h-screen bg-gray-900 text-white flex flex-col">
@@ -60,12 +60,7 @@ export default function Component() {
         >
           ETHGlobal
         </div>
-        <div>
-          {currentScreen !== Screen.WELCOME &&
-            currentScreen !== Screen.ACCESS_WALLET && (
-              <>{user ? <Spinner /> : <DynamicWidget />}</>
-            )}
-        </div>
+        <div>{user && <DynamicWidget />}</div>
       </header>
 
       <main className="flex-grow flex flex-col items-center justify-center p-4">
@@ -88,7 +83,7 @@ export default function Component() {
               onClick={handleConnect}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full max-w-xs"
             >
-              {isLoading ? <Spinner /> : "Connect"}
+              Connect
             </button>
           </div>
         )}
