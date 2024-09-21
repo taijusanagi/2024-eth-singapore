@@ -213,17 +213,30 @@ function AppContent() {
           <div className="text-center w-full max-w-md">
             <h1 className="text-2xl font-bold mb-6">Game</h1>
             <p className="mb-4">Farm, Battle, Govern</p>
-            {["Farm", "Battle", "Govern"].map((action, index) => (
-              <div key={index} className="mb-4 text-left">
-                <h2 className="font-bold flex items-center mb-2">
-                  <span className="w-6 h-6 bg-gray-700 rounded-full mr-2"></span>
-                  {action}
-                </h2>
-                <p className="text-sm opacity-80">
-                  Game rules description goes here
-                </p>
-              </div>
-            ))}
+            <div className="mb-4 text-left">
+              <h2 className="font-bold flex items-center mb-2">
+                <span className="mr-2">🧺</span> Farm
+              </h2>
+              <p className="text-sm opacity-80">
+                Collect resources for your guild
+              </p>
+            </div>
+            <div className="mb-4 text-left">
+              <h2 className="font-bold flex items-center mb-2">
+                <span className="mr-2">⚔️</span> Battle
+              </h2>
+              <p className="text-sm opacity-80">
+                "Interact" with opponents to collect their resources
+              </p>
+            </div>
+            <div className="mb-4 text-left">
+              <h2 className="font-bold flex items-center mb-2">
+                <span className="mr-2">🧠</span> Govern
+              </h2>
+              <p className="text-sm opacity-80">
+                Charter the world's path with your guild members, or alone.
+              </p>
+            </div>
             <button
               onClick={handleNextScreen}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full mt-4"
@@ -234,10 +247,77 @@ function AppContent() {
         )}
 
         {currentScreen === Screen.GAME && (
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-6">Game Screen</h1>
-            <p>Game interaction components go here</p>
-            <PhaserGame />
+          <div className="relative w-full h-screen max-w-md mx-auto bg-white overflow-hidden font-['SF Pro']">
+            {/* 全局状态 */}
+            <div className="absolute top-4 left-5 right-5 bg-white rounded-lg shadow-md border border-gray-200 p-4 flex justify-between items-center">
+              <div>
+                <div className="text-xl font-bold text-black">Global State</div>
+                <div className="text-base text-gray-500">👾 +10 Res</div>
+              </div>
+              <div className="text-blue-500 text-2xl">▶</div>
+            </div>
+
+            {/* 游戏主屏幕 */}
+            <div className="absolute top-24 left-5 right-5 bottom-36 bg-gray-200 rounded-lg overflow-hidden">
+              <PhaserGame />
+            </div>
+
+            {/* 全局数字屏幕 */}
+            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-l-lg shadow-md border border-gray-200 p-2">
+              <div className="flex flex-col space-y-2">
+                <div className="flex items-center justify-end space-x-1">
+                  <span className="text-xl font-bold text-black">789</span>
+                  <span className="text-3xl">👾</span>
+                </div>
+                <div className="flex items-center justify-end space-x-1">
+                  <span className="text-xl font-bold text-black">789</span>
+                  <span className="text-3xl">🪙</span>
+                </div>
+                <div className="flex items-center justify-end space-x-1">
+                  <span className="text-xl font-bold text-black">789</span>
+                  <span className="text-3xl">👻</span>
+                </div>
+                <div className="flex items-center justify-end space-x-1">
+                  <span className="text-xl font-bold text-black">789</span>
+                  <span className="text-3xl">😂</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 底部状态栏 */}
+            <div className="absolute bottom-20 left-5 right-5 flex justify-between">
+              <div className="bg-white rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
+                <span className="text-3xl">🔋</span>
+                <span className="text-2xl text-gray-600">98/100</span>
+              </div>
+              <div className="bg-white rounded-full px-4 py-1.5 flex items-center space-x-2 border border-gray-300">
+                <span className="text-3xl">💰</span>
+                <span className="text-2xl text-gray-600">1,234</span>
+              </div>
+            </div>
+
+            {/* 周围状态栏 */}
+            <div className="absolute bottom-2 left-3 right-3 bg-white rounded-lg shadow-md border border-gray-200 p-2">
+              <div className="text-2xl font-bold mb-1 text-black">Around you</div>
+              <div className="flex justify-between">
+                <div className="flex items-center space-x-1">
+                  <span className="text-xl">👾</span>
+                  <span className="text-xl text-gray-600">10</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <span className="text-xl">🪙</span>
+                  <span className="text-xl text-gray-600">8</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <span className="text-xl">👻</span>
+                  <span className="text-xl text-gray-600">9</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <span className="text-xl">😂</span>
+                  <span className="text-xl text-gray-600">11</span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </main>

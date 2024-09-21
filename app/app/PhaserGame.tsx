@@ -314,20 +314,10 @@ const PhaserGame = () => {
     }
 
     return (
-        <>
-            <button id="equipButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
-                onClick={PlayerEquip}>Harvest</button>
-            <button id="runButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
-                onClick={PlayerWalk}>Walk</button>
-            <button id="fightButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
-                onClick={PlayerFight}>Fight</button>
-            <button id="fightButton" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full w-40"
-                onClick={PlayerFight2}>Shoot</button>
-            <div
-                ref={gameRef}
-                style={{ width: '100%', height: '100vh', maxWidth: '640px', margin: 'auto' }} // Adjust based on your game size
-            />
-        </>
+        <div
+            ref={gameRef}
+            style={{ width: '100%', height: '100%', maxWidth: '640px', margin: 'auto' }} // 调整游戏大小
+        />
     );
 };
 
