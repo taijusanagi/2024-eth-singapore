@@ -66,6 +66,7 @@ const PhaserGame = () => {
 
         this.load.image('pickaxe', 'phaser/pickaxe/1.png');
         this.load.image('coin', 'phaser/resources/coin.png');
+        this.load.image('node', 'phaser/resources/node.png');
 
         preload_fx();
 
@@ -100,8 +101,8 @@ const PhaserGame = () => {
 
         create_fx();
 
-        const resourceNode = this.add.sprite(450, 500, 'coin');
-        resourceNode.setScale(4);
+        const resourceNode = this.add.sprite(450, 500, 'node');
+        resourceNode.setScale(0.5);
         resourceNode.visible = false;
         gameInstanceRef.current.resourceNode = resourceNode;
 
@@ -187,8 +188,8 @@ const PhaserGame = () => {
     function launchCoinStream(startX: any, startY: any, targetX: any, targetY: any) {
         const scene = gameInstanceRef.current.scene.scenes[0];
 
-        const numberOfCoins = 50;  // Number of coins to animate
-        const delayBetweenCoins = 200;  // Delay between each coin animation
+        const numberOfCoins = 30;  // Number of coins to animate
+        const delayBetweenCoins = 150;  // Delay between each coin animation
         const coinSprites = [];
 
         for (let i = 0; i < numberOfCoins; i++) {
@@ -213,6 +214,11 @@ const PhaserGame = () => {
                 }
             });
         }
+
+        // Set a timeout to change the game state after the coin stream is complete
+        setTimeout(() => {
+            PlayerWalk();
+        }, numberOfCoins * delayBetweenCoins);
     }
 
     function PlayHitFX(x: number, y: number) {
