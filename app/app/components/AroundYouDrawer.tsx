@@ -24,8 +24,8 @@ const AroundYouDrawer: React.FC<AroundYouDrawerProps> = ({ onClose }) => {
     // 添加更多项目...
   ];
 
-  const filteredItems = selectedFilter === 'All' 
-    ? items 
+  const filteredItems = selectedFilter === 'All'
+    ? items
     : items.filter(item => item.type === selectedFilter);
 
   const handleItemClick = (itemId: number) => {
@@ -54,9 +54,8 @@ const AroundYouDrawer: React.FC<AroundYouDrawerProps> = ({ onClose }) => {
             <button
               key={filter}
               onClick={() => setSelectedFilter(filter)}
-              className={`px-3 py-1 rounded-full ${
-                selectedFilter === filter ? 'bg-black text-white' : 'bg-white text-black border border-gray-300'
-              }`}
+              className={`px-3 py-1 rounded-full ${selectedFilter === filter ? 'bg-black text-white' : 'bg-white text-black border border-gray-300'
+                }`}
             >
               {filter === 'All' ? filter : `${filter} ${items.filter(item => item.type === filter).length}`}
             </button>
@@ -65,7 +64,7 @@ const AroundYouDrawer: React.FC<AroundYouDrawerProps> = ({ onClose }) => {
         <div className="space-y-2">
           {filteredItems.map(item => (
             <div key={item.id} className="cursor-pointer">
-              <div 
+              <div
                 onClick={() => handleItemClick(item.id)}
                 className="flex justify-between items-center bg-white p-2 rounded-lg border border-gray-200"
               >
@@ -105,11 +104,11 @@ const AroundYouDrawer: React.FC<AroundYouDrawerProps> = ({ onClose }) => {
             </div>
           ))}
         </div>
-        <button 
+        <button
           onClick={onClose}
           className="mt-4 bg-gray-200 text-black px-4 py-2 rounded-full w-full"
         >
-          关闭
+          Close
         </button>
       </div>
     </div>
