@@ -28,7 +28,7 @@ contract ConstantInitialVoiceCreditProxy is InitialVoiceCreditProxy {
   }
 
   // hardcode the deployed conract
-  address public gameAddress = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
+  address public gameAddress = 0x73E5D195B5cf7EB46DE86901AD941986E74921CA;
 
   /// @notice Returns the constant balance for any new MACI's voter
   /// @return balance

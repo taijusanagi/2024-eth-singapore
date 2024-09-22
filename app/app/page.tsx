@@ -84,6 +84,12 @@ export default function HomePage() {
     }
   };
 
+  const triggerHarvest = () => {
+    if (phaserGameRef.current) {
+        phaserGameRef.current.Harvest(); // Call the Harvest method
+    }
+  };
+
   useEffect(() => {
     if (!sdkHasLoaded) {
       return;
@@ -475,6 +481,7 @@ export default function HomePage() {
         {isAroundYouDrawerOpen && (
           <AroundYouDrawer
             triggerFight={triggerFight}
+            triggerHarvest={triggerHarvest}
             onClose={() => setIsAroundYouDrawerOpen(false)}
             nearestMonster={nearestMonster}
             nearestResource={nearestResource}

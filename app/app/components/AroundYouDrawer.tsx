@@ -16,6 +16,7 @@ interface Item {
 
 interface AroundYouDrawerProps {
   triggerFight: () => void;
+  triggerHarvest: () => void;
   onClose: () => void;
   nearestMonster: any;
   nearestResource: any;
@@ -23,6 +24,7 @@ interface AroundYouDrawerProps {
 
 const AroundYouDrawer: React.FC<AroundYouDrawerProps> = ({
   triggerFight,
+  triggerHarvest,
   onClose,
   nearestMonster,
   nearestResource,
@@ -103,6 +105,7 @@ const AroundYouDrawer: React.FC<AroundYouDrawerProps> = ({
         chain: flowTestnet,
         account: address,
       });
+      triggerHarvest()
     }
   };
 
