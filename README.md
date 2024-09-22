@@ -31,3 +31,9 @@
 ### Governance
 - Staking also provides players with **voting power**. This voting power is used during random in-game events where community decisions must be made.
 - The governance system mirrors real-world DAOs, requiring players to persuade or strategize with other community members to vote in favor of decisions that benefit their faction’s direction.
+
+## References
+
+### Telegram Mini App
+
+- To Access the Mini App please access @dynamic_eth_singapore_bot and run /start
