@@ -18,7 +18,7 @@
 
 ### Beginning the Game
 
-- Players join Silent Wars by staking $ETH, $USDC, or $meme. This initial staking process is crucial for determining the direction of the game's governance on censorship resistance.
+- Players join Silent Wars by staking $ETH. This initial staking process is crucial for determining the direction of the game's governance on censorship resistance.
 - Players can choose from three factions:
   - **Cypherpunk**: Advocates for anti-censorship and privacy.
   - **Moloch**: Supports regulatory compliance and the recognition of ETH as digital gold.
